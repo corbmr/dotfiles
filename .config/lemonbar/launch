@@ -1,0 +1,11 @@
+#!/bin/bash
+
+BAR_FIFO="bar.fifo"
+ACTION_FIFO="action.fifo"
+
+[ -p $BAR_FIFO ] || mkfifo $BAR_FIFO
+[ -p $ACTION_FIFO ] || mkfifo $ACTION_FIFO
+
+gorun bar.go < $ACTION_FIFO > $BAR_FIFO &
+
+lemonbar -b -g 2550x20+1925+5 < $BAR_FIFO > $ACTION_FIFO
