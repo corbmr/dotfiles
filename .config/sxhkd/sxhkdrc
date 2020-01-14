@@ -1,0 +1,84 @@
+#
+# wm independent hotkeys
+#
+
+# terminal emulator
+super + Return
+	alacritty
+
+super + @space
+	rofi -modi drun,window -show drun -show-icons
+
+super + shift + c
+	killall sxhkd -USR1
+
+# bspwm
+
+super + shift + r
+	bspc wm -r
+
+super + ctrl + Escape
+	bspc quit
+
+super + {_, shift +} {h,j,k,l}
+	bspc node -{f,s} {west,south,north,east}
+
+super + {_, shift +} {Left,Down,Up,Right}
+	bspc node -{f,s} {west,south,north,east}
+
+super + s ; {Left,Down,Up,Right}
+	bspc node -p ~{west,south,north,east}
+
+super + a
+	bspc node -f @parent
+
+super + shift + q
+	bspc node -c
+
+super + button2
+	bspc node pointed -c
+
+super + button{4,5}
+	bspc node -f {next,prev}.local
+
+super + ctrl + button{4,5}
+	bspc desktop -f {next,prev}.local
+
+super + m
+	bspc desktop -l next
+
+super + {_, shift +} e
+	bspc node @/ {-E,-C forward}
+
+super + {_,shift+,alt+} f
+	bspc node -t {~floating,~fullscreen,tiled}
+
+super + shift + ctrl + {Left,Down,Up,Right}
+	bspc node -m {west,south,north,east} --follow
+
+super + shift + {End,Home}
+	bspc node -d {next,prev}.local --follow
+
+super + {End,Home}
+	bspc desktop -f {next,prev}.local
+
+super + ctrl + {End,Home}
+	bspc monitor -f {next,prev}
+
+super + r :  {Left,Down,Up,Right}
+	bspc node @parent -r {-0.1,+0.1,-0.1,+0.1}
+
+super + ctrl + {j,k}
+	bspc desktop -f {next,prev}.local
+
+super + ctrl + {h,l}
+	bspc monitor -f {prev,next}
+
+super + ctrl + {Down,Up}
+	bspc desktop -f {next,prev}.local
+
+super + ctrl + {Left,Right}
+	bspc monitor -f {prev,next}	
+
+super + p
+	bspc node -g sticky
