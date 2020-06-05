@@ -37,4 +37,3 @@ bspc config automatic_scheme alternate
 bspc rule -a Emacs state=tiled
 
 ~/.fehbg
-
