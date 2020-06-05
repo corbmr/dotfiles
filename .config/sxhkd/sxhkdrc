@@ -2,83 +2,164 @@
 # wm independent hotkeys
 #
 
-# terminal emulator
+# Open terminal
 super + Return
-	alacritty
+	exec alacritty
 
-super + @space
+# Open floating terminal
+super + ctrl + Return
+	bspc rule -a Alacritty -o state=floating && exec alacritty
+
+# Open program launcher
+super + space
 	rofi -modi drun,window -show drun -show-icons
 
+# Launch floating window
+super + ctrl + space
+	bspc rule -a '*' -o state=floating && rofi -modi drun,window -show drun -show-icons
+
+# Reload keybinds
 super + shift + c
-	killall sxhkd -USR1
+	pkill -SIGUSR1 sxhkd
+
+# Screenshot
+Print
+	flameshot gui
+
+# Update wallpaper
+super + shift + w
+	~/.fehbg
+
+# Toggle music player 
+XF86AudioPlay
+	playerctl play-pause
 
 # bspwm
 
+# Restart WM
 super + shift + r
-	bspc wm -r
+	bspc wm -r 
 
+# Quit WM
 super + ctrl + Escape
 	bspc quit
 
-super + {_, shift +} {h,j,k,l}
-	bspc node -{f,s} {west,south,north,east}
+# Add desktop
+super + plus
+	bspc monitor -a $(bspc query -D | wc -l)
 
-super + {_, shift +} {Left,Down,Up,Right}
-	bspc node -{f,s} {west,south,north,east}
+# Remove desktop
+super + underscore
+	bspc desktop -r
 
+# Focus nodes
+super + {h,j,k,l}
+	d={west,south,north,east}; bspc node -f $d || bspc monitor -f $d
+super + {Left,Down,Up,Right}
+	d={west,south,north,east}; bspc node -f $d || bspc monitor -f $d
+
+# Swap nodes
+super + shift + {h,j,k,l}
+	bspc node -s {west,south,north,east} --follow
+super + shift + {Left,Down,Up,Right}
+	bspc node -s {west,south,north,east} --follow
+
+# Move nodes 
+super + ctrl + {h,j,k,l}
+	d={west,south,north,east}; bspc node -n $d --follow || bspc node -m $d --follow
+super + ctrl + {Left,Down,Up,Right}
+	d={west,south,north,east}; bspc node -n $d --follow || bspc node -m $d --follow
+
+# Move desktops
+super + ctrl + shift + {h,j,k,l}
+	d={west,south,north,east}; bspc desktop -m $d --follow || bspc desktop -s $d:focused --follow
+super + ctrl + shift + {Left,Down,Up,Right}
+	d={west,south,north,east}; bspc desktop -m $d --follow || bspc desktop -s $d:focused --follow
+
+# Resize nodes
+super + alt + {h,j,k,l}
+	~/.config/sxhkd/resize {west,south,north,east}
+super + alt + {Left,Down,Up,Right}
+	~/.config/sxhkd/resize {west,south,north,east}
+super + r : {h,j,k,l}
+	~/.config/sxhkd/resize {west,south,north,east}
+super + r : {Left,Down,Up,Right}
+	~/.config/sxhkd/resize {west,south,north,east}
+
+# Flip tree
+super + {_,shift} + v
+	bspc node @parent -F {horizontal,vertical} 
+
+# Preselect
 super + s ; {Left,Down,Up,Right}
 	bspc node -p ~{west,south,north,east}
+super + s ; {h,j,k,l}
+	bspc node -p ~{west,south,north,east}
 
-super + a
-	bspc node -f @parent
+# Cancel preselect
+super + Escape
+	bspc node -p cancel
 
-super + shift + q
-	bspc node -c
+# Focus parent
+super + {_,shift} + a
+	bspc node -f {@parent,pointed}
 
-super + button2
-	bspc node pointed -c
+# Close or kill window
+super + {shift,ctrl} + q
+	bspc node -{c,k}
 
-super + button{4,5}
-	bspc node -f {next,prev}.local
+# Cycle windows / desktops
+super + {_,ctrl} + {_,shift} + Tab
+	bspc {node,desktop} -f {next,prev}.local
 
-super + ctrl + button{4,5}
-	bspc desktop -f {next,prev}.local
+# Cycle windows / desktops with mouse
+super + {_,ctrl} + button{4,5}
+	bspc {node,desktop} -f {next,prev}.local
 
-super + m
+# Switch layout
+super + w
 	bspc desktop -l next
 
-super + {_, shift +} e
-	bspc node @/ {-E,-C forward}
+# Prompt to search firefox 
+super + o ; s
+	dmenu -c -p Search: <&- | xargs -r -I% firefox --new-tab --search %
 
-super + {_,shift+,alt+} f
+# Toggle gaps
+super + y
+	bspc config window_gap $([ $(bspc config window_gap) = 0 ] && echo 8 || echo 0)
+
+# Balance tree
+super + {_,shift} + {e,b}
+	bspc node @{parent,/} -{E,B}
+
+# Golden ratio focused node
+super + shift + g
+	~/.config/sxhkd/golden
+
+# Set window state
+super + {_,shift,alt} + f
 	bspc node -t {~floating,~fullscreen,tiled}
 
-super + shift + ctrl + {Left,Down,Up,Right}
-	bspc node -m {west,south,north,east} --follow
+# Focus next desktop or send window to next desktop
+super + {_,shift} + {End,Home}
+	bspc {desktop -f,node -d} {next,prev}.local
 
-super + shift + {End,Home}
-	bspc node -d {next,prev}.local --follow
+# Focus next monitor or send window to next monitor
+super + ctrl + {_,shift} + {End,Home}
+	bspc {monitor -f,node -m} {next,prev}
 
-super + {End,Home}
-	bspc desktop -f {next,prev}.local
+# Set window as sticky or hidden
+super + {_,shift} + t
+	bspc node -g {sticky,hidden}
 
-super + ctrl + {End,Home}
-	bspc monitor -f {next,prev}
+# Display menu to unhide window
+super + ctrl + minus
+	bspc query -N -n .hidden.window | xargs -r xtitle -f '%u %s\n' | dmenu -c -l 5 | cut -f1 -d' ' | xargs -Iw bspc node w -g hidden=off
 
-super + r :  {Left,Down,Up,Right}
-	bspc node @parent -r {-0.1,+0.1,-0.1,+0.1}
+# Rotate tree
+super + bracket{left,right}
+	bspc node @parent -R {270,90}
 
-super + ctrl + {j,k}
-	bspc desktop -f {next,prev}.local
-
-super + ctrl + {h,l}
-	bspc monitor -f {prev,next}
-
-super + ctrl + {Down,Up}
-	bspc desktop -f {next,prev}.local
-
-super + ctrl + {Left,Right}
-	bspc monitor -f {prev,next}	
-
-super + p
-	bspc node -g sticky
+# Jump to desktop or send node to desktop
+super + {_,shift} + {1-9}
+	bspc {desktop -f,node -d} ^{1-9}

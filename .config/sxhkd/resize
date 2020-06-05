@@ -1,0 +1,11 @@
+#!/bin/sh
+
+amount=50
+
+case $1 in
+	west) bspc node -z right $((-amount)) 0 || bspc node -z left $((-amount)) 0 ;;
+	south) bspc node -z bottom 0 $amount || bspc node -z top 0 $amount ;;
+	north) bspc node -z bottom 0 $((-amount)) || bspc node -z top 0 $((-amount));;
+	east) bspc node -z right $amount 0 || bspc node -z left $amount 0 ;;
+esac
+
