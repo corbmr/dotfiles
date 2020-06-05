@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec lemonbar -b -g 2550x25+1925+5 -u 4 -B "#222" -a 100 -f "Droid Sans:size=10" -f "FontAwesome"
