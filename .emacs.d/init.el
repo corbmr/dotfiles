@@ -91,7 +91,7 @@ There are two things you can do about this warning:
  '(org-support-shift-select t)
  '(package-selected-packages
    (quote
-    (yaml-mode evil-org evil projectile gruvbox-theme org magit lispy company flycheck which-key use-package ivy counsel)))
+    (doom-modeline yaml-mode evil-org evil projectile gruvbox-theme org magit lispy company flycheck which-key use-package ivy counsel)))
  '(pdf-view-midnight-colors (quote ("#fdf4c1" . "#282828")))
  '(show-paren-mode t)
  '(which-key-mode t))
