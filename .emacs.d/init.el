@@ -131,14 +131,14 @@ There are two things you can do about this warning:
  '(ansi-color-names-vector
    ["#3c3836" "#fb4933" "#b8bb26" "#fabd2f" "#83a598" "#d3869b" "#8ec07c" "#ebdbb2"])
  '(counsel-mode nil)
- '(custom-enabled-themes (quote (gruvbox-light-hard)))
+ '(custom-enabled-themes (quote (gruvbox-light-soft)))
  '(custom-safe-themes
    (quote
-    ("4cf9ed30ea575fb0ca3cff6ef34b1b87192965245776afa9e9e20c17d115f3fb" "aded61687237d1dff6325edb492bde536f40b048eab7246c61d5c6643c696b7f" "939ea070fb0141cd035608b2baabc4bd50d8ecc86af8528df9d41f4d83664c6a" "a06658a45f043cd95549d6845454ad1c1d6e24a99271676ae56157619952394a" "123a8dabd1a0eff6e0c48a03dc6fb2c5e03ebc7062ba531543dfbce587e86f2a" "e1d09f1b2afc2fed6feb1d672be5ec6ae61f84e058cb757689edb669be926896" default)))
+	("4cf9ed30ea575fb0ca3cff6ef34b1b87192965245776afa9e9e20c17d115f3fb" "aded61687237d1dff6325edb492bde536f40b048eab7246c61d5c6643c696b7f" "939ea070fb0141cd035608b2baabc4bd50d8ecc86af8528df9d41f4d83664c6a" "a06658a45f043cd95549d6845454ad1c1d6e24a99271676ae56157619952394a" "123a8dabd1a0eff6e0c48a03dc6fb2c5e03ebc7062ba531543dfbce587e86f2a" "e1d09f1b2afc2fed6feb1d672be5ec6ae61f84e058cb757689edb669be926896" default)))
  '(org-support-shift-select t)
  '(package-selected-packages
    (quote
-    (yaml-mode evil-org evil projectile gruvbox-theme org magit lispy company flycheck which-key use-package ivy counsel)))
+	(yaml-mode evil-org evil projectile gruvbox-theme org magit lispy company flycheck which-key use-package ivy counsel)))
  '(pdf-view-midnight-colors (quote ("#fdf4c1" . "#282828")))
  '(show-paren-mode t)
  '(which-key-mode t))
