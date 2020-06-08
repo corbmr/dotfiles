@@ -48,7 +48,13 @@ There are two things you can do about this warning:
       version-control     t ; version numbers for backup files
       delete-old-versions t)
 
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+;;; esc always quits
+(define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
+(global-set-key [escape] 'keyboard-escape-quit)
 
 (use-package lispy
   :hook (emacs-lisp-mode . lispy-mode))
@@ -138,7 +144,7 @@ There are two things you can do about this warning:
  '(org-support-shift-select t)
  '(package-selected-packages
    (quote
-    (doom-modeline yaml-mode evil-org evil projectile gruvbox-theme org magit lispy company flycheck which-key use-package ivy counsel)))
+	(company-lsp lsp-mode lsp-ui doom-modeline yaml-mode evil-org evil projectile gruvbox-theme org magit lispy company flycheck which-key use-package ivy counsel)))
  '(pdf-view-midnight-colors (quote ("#fdf4c1" . "#282828")))
  '(show-paren-mode t)
  '(which-key-mode t))
