@@ -11,10 +11,7 @@ There are two things you can do about this warning:
   (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t))
 (package-initialize)
 
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
-(add-hook 'text-mode-hook 'display-line-numbers-mode)
 (windmove-default-keybindings 'meta)
-(show-paren-mode 1)
 
 (setq-default tab-width 4)
 (setq-default standard-indent 4)
@@ -23,7 +20,6 @@ There are two things you can do about this warning:
 (setq-default indent-tabs-mode t)
 (setq backward-delete-char-untabify-method 'nil)
 
-(setq make-backup-files nil)
 (setq auto-save-default nil)
 
 (menu-bar-mode -1)
@@ -77,9 +73,10 @@ There are two things you can do about this warning:
 
 (use-package company
   :ensure t
-  :config
+  :init
   (setq company-idle-delay 0)
   (setq company-minimum-prefix-length 1)
+  :config
   (global-company-mode))
 
 (use-package flycheck
@@ -103,19 +100,20 @@ There are two things you can do about this warning:
   (global-undo-tree-mode))
 
 (use-package org
-  :hook (org-mode . org-indent-mode))
+  :hook ((org-mode . flyspell-mode)
+		 (org-mode . org-indent-mode)))
   
 (use-package lsp-mode
   :ensure t
   :commands (lsp lsp-deferred)
-  :hook (go-mode . lsp-deferred))
+  :hook ((go-mode lua-mode) . lsp-deferred))
 
 ;; Set up before-save hooks to format buffer and add/delete imports.
 ;; Make sure you don't have other gofmt/goimports hooks enabled.
-(defun lsp-go-install-save-hooks ()
-  (add-hook 'before-save-hook #'lsp-format-buffer t t)
-  (add-hook 'before-save-hook #'lsp-organize-imports t t))
-(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+(add-hook 'go-mode-hook
+		  (lambda ()
+			(add-hook 'before-save-hook #'lsp-format-buffer t t)
+			(add-hook 'before-save-hook #'lsp-organize-imports t t)))
 
 ;; Optional - provides fancier overlays.
 (use-package lsp-ui
@@ -124,8 +122,8 @@ There are two things you can do about this warning:
 
 (use-package company-lsp
   :config
-  (push 'company-lsp company-backend))
-
+  (push 'company-lsp company-backend)
+  (push '(lsp-emmy-lua . t) company-lsp-filter-candidates))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -141,10 +139,11 @@ There are two things you can do about this warning:
  '(custom-safe-themes
    (quote
 	("4cf9ed30ea575fb0ca3cff6ef34b1b87192965245776afa9e9e20c17d115f3fb" "aded61687237d1dff6325edb492bde536f40b048eab7246c61d5c6643c696b7f" "939ea070fb0141cd035608b2baabc4bd50d8ecc86af8528df9d41f4d83664c6a" "a06658a45f043cd95549d6845454ad1c1d6e24a99271676ae56157619952394a" "123a8dabd1a0eff6e0c48a03dc6fb2c5e03ebc7062ba531543dfbce587e86f2a" "e1d09f1b2afc2fed6feb1d672be5ec6ae61f84e058cb757689edb669be926896" default)))
+ '(org-babel-load-languages (quote ((js . t))))
  '(org-support-shift-select t)
  '(package-selected-packages
    (quote
-	(company-lsp lsp-mode lsp-ui doom-modeline yaml-mode evil-org evil projectile gruvbox-theme org magit lispy company flycheck which-key use-package ivy counsel)))
+	(treemacs lua-mode company-lsp lsp-mode lsp-ui doom-modeline yaml-mode evil-org evil projectile gruvbox-theme org magit lispy company flycheck which-key use-package ivy counsel)))
  '(pdf-view-midnight-colors (quote ("#fdf4c1" . "#282828")))
  '(show-paren-mode t)
  '(which-key-mode t))
@@ -157,7 +156,7 @@ There are two things you can do about this warning:
 
 (if (daemonp)
     (add-hook 'after-make-frame-functions
-	      (lambda (frame)
-		(select-frame frame)
-		(load-theme (car custom-enabled-themes) t))))
+			  (lambda (frame)
+				(select-frame frame)
+				(load-theme (car custom-enabled-themes) t))))
 
