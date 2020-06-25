@@ -35,5 +35,6 @@ bspc config single_monocle          true
 bspc config automatic_scheme alternate
 
 bspc rule -a Emacs state=tiled
+bspc rule -a feh state=floating
 
 ~/.fehbg

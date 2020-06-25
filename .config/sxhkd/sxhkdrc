@@ -65,15 +65,15 @@ super + shift + {Left,Down,Up,Right}
 	bspc node -s {west,south,north,east} --follow
 
 # Move nodes 
-super + ctrl + {h,j,k,l}
+super + ctrl + shift + {h,j,k,l}
 	d={west,south,north,east}; bspc node -n $d --follow || bspc node -m $d --follow
-super + ctrl + {Left,Down,Up,Right}
+super + ctrl + shift + {Left,Down,Up,Right}
 	d={west,south,north,east}; bspc node -n $d --follow || bspc node -m $d --follow
 
 # Move desktops
-super + ctrl + shift + {h,j,k,l}
+super + ctrl + alt + {h,j,k,l}
 	d={west,south,north,east}; bspc desktop -m $d --follow || bspc desktop -s $d:focused --follow
-super + ctrl + shift + {Left,Down,Up,Right}
+super + ctrl + alt + {Left,Down,Up,Right}
 	d={west,south,north,east}; bspc desktop -m $d --follow || bspc desktop -s $d:focused --follow
 
 # Resize nodes
@@ -85,6 +85,18 @@ super + r : {h,j,k,l}
 	~/.config/sxhkd/resize {west,south,north,east}
 super + r : {Left,Down,Up,Right}
 	~/.config/sxhkd/resize {west,south,north,east}
+
+# Focus monitor
+super + ctrl + {h,l}
+	bspc monitor -f {prev,next}
+super + ctrl + {Left,Right}
+	bspc monitor -f {prev,next}
+
+# Focus desktop
+super + ctrl + {j,k}
+	bspc desktop -f {prev,next}.local
+super + ctrl + {Down,Up}
+	bspc desktop -f {prev,next}.local
 
 # Flip tree
 super + {_,shift} + v
@@ -136,8 +148,12 @@ super + {_,shift} + {e,b}
 super + shift + g
 	~/.config/sxhkd/golden
 
-# Set window state
-super + {_,shift,alt} + f
+# Focus floating
+super + f
+	bspc node -f next.floating
+
+# Toggle floating
+super + {shift,ctrl,alt} + f
 	bspc node -t {~floating,~fullscreen,tiled}
 
 # Focus next desktop or send window to next desktop
