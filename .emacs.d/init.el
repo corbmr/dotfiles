@@ -17,7 +17,7 @@ There are two things you can do about this warning:
 (setq-default standard-indent 4)
 (setq c-basic-offset tab-width)
 (setq-default electric-indent-inhibit t)
-(setq-default indent-tabs-mode t)
+;; (setq-default indent-tabs-mode t)
 (setq backward-delete-char-untabify-method 'nil)
 
 (setq auto-save-default nil)
@@ -105,20 +105,24 @@ There are two things you can do about this warning:
   
 (use-package lsp-mode
   :ensure t
-  :commands (lsp lsp-deferred)
-  :hook ((go-mode lua-mode) . lsp-deferred))
+  :commands (lsp lsp-deferred))
 
-;; Set up before-save hooks to format buffer and add/delete imports.
-;; Make sure you don't have other gofmt/goimports hooks enabled.
-(add-hook 'go-mode-hook
-		  (lambda ()
-			(add-hook 'before-save-hook #'lsp-format-buffer t t)
-			(add-hook 'before-save-hook #'lsp-organize-imports t t)))
+(use-package go-mode
+  :hook ((go-mode . (lambda ()
+					  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+					  (add-hook 'before-save-hook #'lsp-organize-imports t t)))
+		 (go-mode . #'lsp-deferred)))
+
+(use-package lua-mode
+  :hook (lua-mode . #'lsp-deferred))
 
 ;; Optional - provides fancier overlays.
 (use-package lsp-ui
   :ensure t
-  :commands lsp-ui-mode)
+  :commands lsp-ui-mode
+  :bind (:map lsp-ui-mode-map
+			  ([remap xref-find-definitions] . #'lsp-ui-peek-find-definitions)
+			  ([remap xref-find-references] . #'lsp-ui-peek-find-references)))
 
 (use-package company-lsp
   :config
@@ -133,7 +137,7 @@ There are two things you can do about this warning:
  '(ansi-color-faces-vector
    [default bold shadow italic underline bold bold-italic bold])
  '(ansi-color-names-vector
-   ["#3c3836" "#fb4933" "#b8bb26" "#fabd2f" "#83a598" "#d3869b" "#8ec07c" "#ebdbb2"])
+   ["#ebdbb2" "#9d0006" "#79740e" "#b57614" "#076678" "#8f3f71" "#427b58" "#3c3836"])
  '(counsel-mode nil)
  '(custom-enabled-themes (quote (gruvbox-light-soft)))
  '(custom-safe-themes
@@ -143,8 +147,8 @@ There are two things you can do about this warning:
  '(org-support-shift-select t)
  '(package-selected-packages
    (quote
-	(treemacs lua-mode company-lsp lsp-mode lsp-ui doom-modeline yaml-mode evil-org evil projectile gruvbox-theme org magit lispy company flycheck which-key use-package ivy counsel)))
- '(pdf-view-midnight-colors (quote ("#fdf4c1" . "#282828")))
+	(lsp-treemacs treemacs lua-mode company-lsp lsp-mode lsp-ui doom-modeline yaml-mode evil-org evil projectile gruvbox-theme org magit lispy company flycheck which-key use-package ivy counsel)))
+ '(pdf-view-midnight-colors (quote ("#282828" . "#f2e5bc")))
  '(show-paren-mode t)
  '(which-key-mode t))
 (custom-set-faces
