@@ -15,10 +15,7 @@ There are two things you can do about this warning:
 
 (setq-default tab-width 4)
 (setq-default standard-indent 4)
-(setq c-basic-offset tab-width)
-(setq-default electric-indent-inhibit t)
-;; (setq-default indent-tabs-mode t)
-(setq backward-delete-char-untabify-method 'nil)
+(setq-default indent-tabs-mode nil)
 
 (setq auto-save-default nil)
 
@@ -27,10 +24,15 @@ There are two things you can do about this warning:
 (auto-save-visited-mode 1)
 (recentf-mode 1)
 (show-paren-mode 1)
+(electric-pair-mode 1)
 
-(add-hook 'text-mode-hook 'display-line-numbers-mode)
-(add-hook 'text-mode-hook 'visual-line-mode)
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'text-mode-hook (lambda ()
+							(display-line-numbers-mode)
+							(visual-line-mode)))
+
+(add-hook 'prog-mode-hook (lambda ()
+							(display-line-numbers-mode)
+							(setq truncate-lines t)))
 
 (eval-when-compile
   (require 'use-package))
@@ -76,15 +78,11 @@ There are two things you can do about this warning:
   :init
   (setq company-idle-delay 0)
   (setq company-minimum-prefix-length 1)
-  :config
-  (global-company-mode))
+  :hook (prog-mode . company-mode))
 
 (use-package flycheck
   :config
   (global-flycheck-mode))
-
-(use-package company
-  :hook (prog-mode . company-mode))
 
 (use-package projectile
   :bind-keymap
@@ -105,7 +103,11 @@ There are two things you can do about this warning:
   
 (use-package lsp-mode
   :ensure t
-  :commands (lsp lsp-deferred))
+  :commands (lsp lsp-deferred)
+  :hook (lsp-mode . #'lsp-enable-which-key-integration)
+  :init
+  (setq lsp-enable-snippet nil
+        lsp-keymap-prefix "C-c l"))
 
 (use-package go-mode
   :hook ((go-mode . (lambda ()
@@ -129,6 +131,12 @@ There are two things you can do about this warning:
   (push 'company-lsp company-backend)
   (push '(lsp-emmy-lua . t) company-lsp-filter-candidates))
 
+(use-package jq-mode
+  :mode "\\.jq$")
+
+(use-package typescript-mode
+  :hook (typescript-mode . lsp-deferred))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -138,7 +146,6 @@ There are two things you can do about this warning:
    [default bold shadow italic underline bold bold-italic bold])
  '(ansi-color-names-vector
    ["#ebdbb2" "#9d0006" "#79740e" "#b57614" "#076678" "#8f3f71" "#427b58" "#3c3836"])
- '(counsel-mode nil)
  '(custom-enabled-themes (quote (gruvbox-light-soft)))
  '(custom-safe-themes
    (quote
@@ -147,10 +154,8 @@ There are two things you can do about this warning:
  '(org-support-shift-select t)
  '(package-selected-packages
    (quote
-	(lsp-treemacs treemacs lua-mode company-lsp lsp-mode lsp-ui doom-modeline yaml-mode evil-org evil projectile gruvbox-theme org magit lispy company flycheck which-key use-package ivy counsel)))
- '(pdf-view-midnight-colors (quote ("#282828" . "#f2e5bc")))
- '(show-paren-mode t)
- '(which-key-mode t))
+	(tide typescript-mode jq-mode lsp-treemacs treemacs lua-mode company-lsp lsp-mode lsp-ui doom-modeline yaml-mode evil-org evil projectile gruvbox-theme org magit lispy company flycheck which-key use-package ivy counsel)))
+ '(pdf-view-midnight-colors (quote ("#282828" . "#f2e5bc"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
