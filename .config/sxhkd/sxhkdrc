@@ -20,7 +20,7 @@ super + ctrl + space
 
 # Reload keybinds
 super + shift + c
-	pkill -SIGUSR1 sxhkd
+	; pkill -SIGUSR1 sxhkd
 
 # Screenshot
 Print
@@ -141,20 +141,16 @@ super + y
 	bspc config window_gap $([ $(bspc config window_gap) = 0 ] && echo 8 || echo 0)
 
 # Balance tree
-super + {_,shift} + {e,b}
+super + {_,shift} + {_,ctrl} + e
 	bspc node @{parent,/} -{E,B}
 
 # Golden ratio focused node
 super + shift + g
 	~/.config/sxhkd/golden
 
-# Focus floating
-super + f
-	bspc node -f next.floating
-
-# Toggle floating
-super + {shift,ctrl,alt} + f
-	bspc node -t {~floating,~fullscreen,tiled}
+# Toggle floating / fullscreen
+super + {_,shift} + f
+	bspc node -t ~{floating,fullscreen}
 
 # Focus next desktop or send window to next desktop
 super + {_,shift} + {End,Home}
