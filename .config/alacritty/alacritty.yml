@@ -375,7 +375,7 @@ color-schemes:
       cyan:    '0x35434d'
       white:   '0xffffff'
 
-colors: *material
+colors: *gruvbox_light
 
 # Visual Bell
 #

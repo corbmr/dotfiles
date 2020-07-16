@@ -1,14 +1,7 @@
 (require 'package)
-(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
-                    (not (gnutls-available-p))))
-       (proto (if no-ssl "http" "https")))
-  (when no-ssl (warn "\
-Your version of Emacs does not support SSL connections,
-which is unsafe because it allows man-in-the-middle attacks.
-There are two things you can do about this warning:
-1. Install an Emacs version that does support SSL and be safe.
-2. Remove this warning from your init file so you won't see it again."))
-  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t))
+(setq package-archives `(("org"   . "https://orgmode.org/elpa/")
+                         ("melpa" . "https://melpa.org/packages/")
+                         ("gnu"   . "https://elpa.gnu.org/packages/")))
 (package-initialize)
 
 (windmove-default-keybindings 'meta)
@@ -24,26 +17,20 @@ There are two things you can do about this warning:
 (auto-save-visited-mode 1)
 (recentf-mode 1)
 (show-paren-mode 1)
+(display-line-numbers-mode 1)
+(column-number-mode 1)
 (electric-pair-mode 1)
 
-(add-hook 'text-mode-hook (lambda ()
-							(display-line-numbers-mode)
-							(visual-line-mode)))
-
-(add-hook 'prog-mode-hook (lambda ()
-							(display-line-numbers-mode)
-							(setq truncate-lines t)))
-
-(eval-when-compile
-  (require 'use-package))
+(add-hook 'text-mode-hook 'visual-line-mode)
+(add-hook 'prog-mode-hook 'toggle-truncate-lines)
 
 (defvar --backup-directory (concat user-emacs-directory "backups"))
-(if (not (file-exists-p --backup-directory))
-    (make-directory --backup-directory t))
-(setq backup-directory-alist `(("." . ,--backup-directory)))
-(setq make-backup-files   t ; backup of a file the first time it is saved.
-      backup-by-copying   t ; don't clobber symlinks
-      version-control     t ; version numbers for backup files
+(unless (file-exists-p --backup-directory)
+  (make-directory --backup-directory t))
+(setq backup-directory-alist `(("." . ,--backup-directory))
+      make-backup-files t ; backup of a file the first time it is saved.
+      backup-by-copying t ; don't clobber symlinks
+      version-control t   ; version numbers for backup files
       delete-old-versions t)
 
 ;;; esc always quits
@@ -54,15 +41,11 @@ There are two things you can do about this warning:
 (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
 (global-set-key [escape] 'keyboard-escape-quit)
 
+(eval-when-compile
+  (require 'use-package))
+
 (use-package lispy
   :hook (emacs-lisp-mode . lispy-mode))
-
-(use-package which-key
-  :ensure t
-  :init
-  (setq which-key-show-early-on-C-h t)
-  :config
-  (which-key-mode))
 
 (use-package ivy
   :ensure t
@@ -71,13 +54,28 @@ There are two things you can do about this warning:
   (setq ivy-use-virtual-buffers t
 		ivy-count-format "%d/%d ")
   :config
-  (ivy-mode))
+  (ivy-mode t))
+
+(use-package which-key
+  :ensure t
+  :demand
+  :init
+  (setq which-key-show-early-on-C-h t)
+  :config
+  (which-key-mode t))
+
+(use-package undo-tree
+  :ensure t
+  :demand
+  :bind (("C-z" . 'undo-tree-undo)
+		 ("C-S-z" . 'undo-tree-redo))
+  :config
+  (global-undo-tree-mode t))
 
 (use-package company
-  :ensure t
   :init
-  (setq company-idle-delay 0)
-  (setq company-minimum-prefix-length 1)
+  (setq company-idle-delay 0
+        company-minimum-prefix-length 1)
   :hook (prog-mode . company-mode))
 
 (use-package flycheck
@@ -85,57 +83,89 @@ There are two things you can do about this warning:
   (global-flycheck-mode))
 
 (use-package projectile
+  :init
+  (setq projectile-completion-system 'ivy)
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :config
-  (projectile-mode))
-
-(use-package undo-tree
-  :demand
-  :bind (("C-z" . 'undo-tree-undo)
-		 ("C-S-z" . 'undo-tree-redo))
-  :config
-  (global-undo-tree-mode))
+  (projectile-mode t))
 
 (use-package org
-  :hook ((org-mode . flyspell-mode)
-		 (org-mode . org-indent-mode)))
+  :init
+  (setq org-directory "~/Org"
+        org-default-notes-file (concat org-directory "/notes.org"))
+
+  :hook (org-mode . 'org-indent-mode)
   
+  :config
+  (use-package org-agenda
+    :init
+    (setq org-agenda-files (list org-directory))
+    :bind (("C-c a" . 'org-agenda)))
+
+  (use-package org-capture
+    :init
+    (setq org-capture-templates
+          `(("t" "Todo" entry (file+headline "" "Tasks") "* TODO %?\n %i\n %a")))
+    :bind (("C-c c" . 'org-capture))))
+
 (use-package lsp-mode
-  :ensure t
-  :commands (lsp lsp-deferred)
-  :hook (lsp-mode . #'lsp-enable-which-key-integration)
+  :commands (lsp)
   :init
   (setq lsp-enable-snippet nil
-        lsp-keymap-prefix "C-c l"))
+        lsp-keymap-prefix "C-c l")
+  
+  :hook (lsp-mode . 'lsp-enable-which-key-integration)
+
+  :config
+  (use-package lsp-ui
+    :bind (:map lsp-ui-mode-map
+                ([remap xref-find-definitions] . 'lsp-ui-peek-find-definitions)
+                ([remap xref-find-references] . 'lsp-ui-peek-find-references)))
+  
+  (use-package lsp-solargraph
+    :init
+    (setq lsp-solargraph-hover nil)))
 
 (use-package go-mode
   :hook ((go-mode . (lambda ()
-					  (add-hook 'before-save-hook #'lsp-format-buffer t t)
-					  (add-hook 'before-save-hook #'lsp-organize-imports t t)))
-		 (go-mode . #'lsp-deferred)))
+                      (add-hook 'before-save-hook 'lsp-format-buffer t t)
+                      (add-hook 'before-save-hook 'lsp-organize-imports t t)))
+         (go-mode . 'lsp)))
 
 (use-package lua-mode
-  :hook (lua-mode . #'lsp-deferred))
+  :hook (lua-mode . 'lsp))
 
-;; Optional - provides fancier overlays.
-(use-package lsp-ui
-  :ensure t
-  :commands lsp-ui-mode
-  :bind (:map lsp-ui-mode-map
-			  ([remap xref-find-definitions] . #'lsp-ui-peek-find-definitions)
-			  ([remap xref-find-references] . #'lsp-ui-peek-find-references)))
+(use-package ruby-mode
+  :hook (ruby-mode . 'lsp))
 
 (use-package company-lsp
   :config
-  (push 'company-lsp company-backend)
-  (push '(lsp-emmy-lua . t) company-lsp-filter-candidates))
+  (add-to-list company-lsp-filter-candidates '(lsp-emmy-lua . t))
+  (push 'company-lsp company-backend))
 
 (use-package jq-mode
   :mode "\\.jq$")
 
 (use-package typescript-mode
-  :hook (typescript-mode . lsp-deferred))
+  :hook (typescript-mode . 'lsp))
+
+(use-package magit
+  :bind (:map magit-file-mode-map
+              ("C-c g" . 'magit-file-dispatch)))
+
+(use-package diff-hl
+  :config
+  (global-diff-hl-mode))
+
+(use-package treemacs
+  :bind (("C-x t t" . 'treemacs)))
+
+(use-package treemacs-projectile
+  :after treemacs projectile)
+
+(use-package lsp-java
+  :hook (java-mode . 'lsp))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -149,12 +179,12 @@ There are two things you can do about this warning:
  '(custom-enabled-themes (quote (gruvbox-light-soft)))
  '(custom-safe-themes
    (quote
-	("4cf9ed30ea575fb0ca3cff6ef34b1b87192965245776afa9e9e20c17d115f3fb" "aded61687237d1dff6325edb492bde536f40b048eab7246c61d5c6643c696b7f" "939ea070fb0141cd035608b2baabc4bd50d8ecc86af8528df9d41f4d83664c6a" "a06658a45f043cd95549d6845454ad1c1d6e24a99271676ae56157619952394a" "123a8dabd1a0eff6e0c48a03dc6fb2c5e03ebc7062ba531543dfbce587e86f2a" "e1d09f1b2afc2fed6feb1d672be5ec6ae61f84e058cb757689edb669be926896" default)))
+    ("4cf9ed30ea575fb0ca3cff6ef34b1b87192965245776afa9e9e20c17d115f3fb" "aded61687237d1dff6325edb492bde536f40b048eab7246c61d5c6643c696b7f" "939ea070fb0141cd035608b2baabc4bd50d8ecc86af8528df9d41f4d83664c6a" "a06658a45f043cd95549d6845454ad1c1d6e24a99271676ae56157619952394a" "123a8dabd1a0eff6e0c48a03dc6fb2c5e03ebc7062ba531543dfbce587e86f2a" "e1d09f1b2afc2fed6feb1d672be5ec6ae61f84e058cb757689edb669be926896" default)))
  '(org-babel-load-languages (quote ((js . t))))
  '(org-support-shift-select t)
  '(package-selected-packages
    (quote
-	(tide typescript-mode jq-mode lsp-treemacs treemacs lua-mode company-lsp lsp-mode lsp-ui doom-modeline yaml-mode evil-org evil projectile gruvbox-theme org magit lispy company flycheck which-key use-package ivy counsel)))
+    (org diff-hl undo-tree treemacs-projectile lsp-ivy lsp-java shell-toggle tide typescript-mode jq-mode lsp-treemacs treemacs lua-mode company-lsp lsp-mode lsp-ui doom-modeline yaml-mode evil-org evil projectile gruvbox-theme magit lispy company flycheck which-key use-package ivy counsel)))
  '(pdf-view-midnight-colors (quote ("#282828" . "#f2e5bc"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -168,4 +198,3 @@ There are two things you can do about this warning:
 			  (lambda (frame)
 				(select-frame frame)
 				(load-theme (car custom-enabled-themes) t))))
-
