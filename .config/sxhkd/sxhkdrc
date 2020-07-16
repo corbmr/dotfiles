@@ -1,7 +1,3 @@
-#
-# wm independent hotkeys
-#
-
 # Open terminal
 super + Return
 	exec alacritty
@@ -33,8 +29,6 @@ super + shift + w
 # Toggle music player 
 XF86AudioPlay
 	playerctl play-pause
-
-# bspwm
 
 # Restart WM
 super + shift + r
