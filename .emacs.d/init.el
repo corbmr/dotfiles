@@ -17,12 +17,13 @@
 (auto-save-visited-mode 1)
 (recentf-mode 1)
 (show-paren-mode 1)
-(display-line-numbers-mode 1)
 (column-number-mode 1)
 (electric-pair-mode 1)
 
 (add-hook 'text-mode-hook 'visual-line-mode)
+(add-hook 'text-mode-hook 'display-line-numbers-mode)
 (add-hook 'prog-mode-hook 'toggle-truncate-lines)
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
 
 (defvar --backup-directory (concat user-emacs-directory "backups"))
 (unless (file-exists-p --backup-directory)
@@ -45,12 +46,10 @@
 (progn
   (require 'org)
   (setq org-directory "~/Org"
-        org-default-notes-file (concat org-directory "/notes.org"))
+        org-default-notes-file (concat org-directory "/notes.org")
+        org-agenda-files (list org-directory))
 
   (add-hook 'org-mode-hook 'org-indent-mode)
-  (setq org-agenda-files (list org-directory))
-
-  (global-set-key (kbd "C-c a") 'org-agenda)
 
   (require 'org-capture)
   (setq org-capture-templates
@@ -61,6 +60,8 @@
           ("g" "Game add" table-line
            (file "games.org")
            "|%?||%^{Status:|Play|Replay|Playing|Finished|Ongoing}||")))
+
+  (global-set-key (kbd "C-c a") 'org-agenda)
   (global-set-key (kbd "C-c c") 'org-capture))
 
 (eval-when-compile
@@ -104,15 +105,14 @@
   :config
   (global-flycheck-mode))
 
-(use-package heaven-and-hell
-  :init
-  (setq heaven-and-hell-themes
-        '((light . gruvbox-light-soft)
-          (dark . material)))
-  (setq heaven-and-hell-load-theme-no-confirm t)
+(progn
+  (require 'heaven-and-hell)
+  (setq heaven-and-hell-themes '((light . gruvbox-light-soft)
+                                 (dark . material))
+        heaven-and-hell-load-theme-no-confirm t)
 
-  :hook (after-init . 'heaven-and-hell-init-hook)
-  :bind (("<f6>" . 'heaven-and-hell-toggle-theme)))
+  (add-hook 'after-init-hook 'heaven-and-hell-init-hook)
+  (global-set-key (kbd "<f6>") 'heaven-and-hell-toggle-theme))
 
 (use-package projectile
   :init
@@ -123,22 +123,23 @@
   (projectile-mode t))
 
 (use-package lsp-mode
-  :commands (lsp)
   :init
   (setq lsp-enable-snippet nil
         lsp-keymap-prefix "C-c l")
   
-  :hook (lsp-mode . 'lsp-enable-which-key-integration)
+  ;; :hook (lsp-mode . 'lsp-enable-which-key-integration)
+  )
 
-  :config
-  (use-package lsp-ui
-    :bind (:map lsp-ui-mode-map
-                ([remap xref-find-definitions] . 'lsp-ui-peek-find-definitions)
-                ([remap xref-find-references] . 'lsp-ui-peek-find-references)))
-  
-  (use-package lsp-solargraph
-    :init
-    (setq lsp-solargraph-hover nil)))
+(use-package lsp-ui
+  :after (lsp-mode)
+  :bind (:map lsp-ui-mode-map
+              ([remap xref-find-definitions] . 'lsp-ui-peek-find-definitions)
+              ([remap xref-find-references] . 'lsp-ui-peek-find-references)))
+
+;; (use-package lsp-solargraph
+;;   :after lsp-mode
+;;   :init
+;;   (setq lsp-solargraph-hover nil))
 
 (use-package go-mode
   :hook ((go-mode . (lambda ()
@@ -153,15 +154,20 @@
   :hook (ruby-mode . 'lsp))
 
 (use-package company-lsp
+  :after (company lsp-mode)
   :config
   (add-to-list 'company-lsp-filter-candidates '(lsp-emmy-lua . t))
-  (push 'company-lsp company-backend))
+  (add-to-list 'company-backends 'company-lsp))
 
 (use-package jq-mode
   :mode "\\.jq$")
 
-(use-package typescript-mode
-  :hook (typescript-mode . 'lsp))
+(use-package typescript-mode)
+
+(use-package tide
+  :after (typescript-mode)
+  :hook ((typescript-mode . tide-setup)
+         (before-save . tide-format-before-save)))
 
 (use-package magit
   :bind (:map magit-file-mode-map
@@ -189,6 +195,7 @@
    [default bold shadow italic underline bold bold-italic bold])
  '(ansi-color-names-vector
    ["#ebdbb2" "#9d0006" "#79740e" "#b57614" "#076678" "#8f3f71" "#427b58" "#3c3836"])
+ '(custom-enabled-themes (quote (gruvbox-light-soft)))
  '(custom-safe-themes
    (quote
     ("d4f8fcc20d4b44bf5796196dbeabec42078c2ddb16dcb6ec145a1c610e0842f3" "4cf9ed30ea575fb0ca3cff6ef34b1b87192965245776afa9e9e20c17d115f3fb" "aded61687237d1dff6325edb492bde536f40b048eab7246c61d5c6643c696b7f" "939ea070fb0141cd035608b2baabc4bd50d8ecc86af8528df9d41f4d83664c6a" "a06658a45f043cd95549d6845454ad1c1d6e24a99271676ae56157619952394a" "123a8dabd1a0eff6e0c48a03dc6fb2c5e03ebc7062ba531543dfbce587e86f2a" "e1d09f1b2afc2fed6feb1d672be5ec6ae61f84e058cb757689edb669be926896" default)))

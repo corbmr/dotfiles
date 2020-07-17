@@ -38,8 +38,9 @@ workspace 5 output $output4
 
 # bindsym --release button2 kill
 
-bindsym $mod+y title_format "[%class][%instance] %title", border normal
-bindsym $mod+u title_format "%title", border pixel 0
+for_window [class=".*"] border pixel 1
+# bindsym $mod+y title_format "[%class][%instance] %title", border normal
+bindsym $mod+u border toggle 1
 
 smart_gaps on
 gaps inner 8
@@ -189,7 +190,6 @@ show_marks yes
 bindsym $mod+Shift+minus move scratchpad
 bindsym $mod+minus scratchpad show
 
-bindsym $mod+$alt+Return [class="Gnome-terminal"] scratchpad show
 bindsym $mod+$alt+s [class="Spotify"] focus 
 bindsym $mod+$alt+d [class="discord"] focus
 
@@ -204,54 +204,26 @@ set $resize_amount 5 px or 5 ppt
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
-        # These bindings trigger as soon as you enter the resize mode
+     # These bindings trigger as soon as you enter the resize mode
 
-        # same bindings, but for the arrow keys
-        bindsym Left resize shrink width $resize_amount
-        bindsym Down resize shrink height $resize_amount
-        bindsym Up resize grow height $resize_amount
-        bindsym Right resize grow width $resize_amount
+     # same bindings, but for the arrow keys
+     bindsym Left resize shrink width $resize_amount
+     bindsym Down resize shrink height $resize_amount
+     bindsym Up resize grow height $resize_amount
+     bindsym Right resize grow width $resize_amount
 
-        # back to normal: Enter or Escape
-        bindsym Return mode "default"
-        bindsym Escape mode "default"
+     # back to normal: Enter or Escape
+     bindsym Return mode "default"
+     bindsym Escape mode "default"
 }
 
 bindsym $mod+r mode "resize"
 
-set $focus "Focus: [t]hunderbird [f]irefox [d]iscord [s]potify [i]ntellij"
-bindsym $mod+o mode $focus
-
-mode $focus {
-	bindsym t [class="Thunderbird"] focus; mode "default"
-	bindsym f [class="Firefox"] focus; mode "default"
-	bindsym d [class="discord"] focus; mode "default"
-	bindsym s [class="Spotify"] focus; mode "default"
-	bindsym i [class="jetbrains-idea-ce"] focus; mode "default"
-
-	bindsym Return mode "default"
-	bindsym Escape mode "default"
-}
-
-set $launch "Launch: [t]hunderbird [f]irefox [d]iscord [s]potify [i]ntellij"
-bindsym $mod+x mode $launch 
-
-mode $launch {
-	bindsym t exec thunderbird; mode "default"
-	bindsym f exec firefox; mode "default"
-	bindsym d exec discord; mode "default"
-	bindsym i exec intellij-idea-community; mode "default"
-	bindsym s exec spotify; mode "default"
-	
-	bindsym Return mode "default"
-	bindsym Escape mode "default"
-}
-
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-        status_command i3status
-	position top
+    status_command i3status
+    position top
 }
 
 # Pulse Audio controls
@@ -270,5 +242,6 @@ bindsym XF86AudioNext exec playerctl next
 bindsym XF86AudioPrev exec playerctl previous
 
 bindsym $mod+p exec playerctl play-pause
+bindsym Print exec flameshot gui
 
 # bindsym $mod+n exec --no-startup-id flash_window
