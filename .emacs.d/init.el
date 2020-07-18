@@ -42,16 +42,15 @@
 (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
 (global-set-key [escape] 'keyboard-escape-quit)
 
-;; org config
-(progn
-  (require 'org)
+(eval-when-compile
+  (require 'use-package))
+
+(use-package org
+  :init
   (setq org-directory "~/Org"
         org-default-notes-file (concat org-directory "/notes.org")
         org-agenda-files (list org-directory))
 
-  (add-hook 'org-mode-hook 'org-indent-mode)
-
-  (require 'org-capture)
   (setq org-capture-templates
         `(("t" "Todo" entry
            (file+headline "" "Tasks")
@@ -61,11 +60,9 @@
            (file "games.org")
            "|%?||%^{Status:|Play|Replay|Playing|Finished|Ongoing}||")))
 
-  (global-set-key (kbd "C-c a") 'org-agenda)
-  (global-set-key (kbd "C-c c") 'org-capture))
-
-(eval-when-compile
-  (require 'use-package))
+  :hook (org-mode . org-indent-mode)
+  :bind (("C-c a" . org-agenda)
+         ("C-c c" . org-capture)))
 
 (use-package lispy
   :hook (emacs-lisp-mode . lispy-mode))
@@ -90,8 +87,8 @@
 (use-package undo-tree
   :ensure t
   :demand
-  :bind (("C-z" . 'undo-tree-undo)
-		 ("C-S-z" . 'undo-tree-redo))
+  :bind (("C-z" . undo-tree-undo)
+		 ("C-S-z" . undo-tree-redo))
   :config
   (global-undo-tree-mode t))
 
@@ -105,14 +102,13 @@
   :config
   (global-flycheck-mode))
 
-(progn
-  (require 'heaven-and-hell)
+(use-package heaven-and-hell
+  :init
   (setq heaven-and-hell-themes '((light . gruvbox-light-soft)
                                  (dark . material))
         heaven-and-hell-load-theme-no-confirm t)
-
-  (add-hook 'after-init-hook 'heaven-and-hell-init-hook)
-  (global-set-key (kbd "<f6>") 'heaven-and-hell-toggle-theme))
+  :hook (after-init . heaven-and-hell-init-hook)
+  :bind ("<f6>" . heaven-and-hell-toggle-theme))
 
 (use-package projectile
   :init
@@ -120,38 +116,40 @@
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :config
-  (projectile-mode t))
+  (projectile-mode t)
+  :hook (projectile-after-switch-project . treemacs))
 
 (use-package lsp-mode
+  :commands (lsp lsp-deferred)
   :init
   (setq lsp-enable-snippet nil
         lsp-keymap-prefix "C-c l")
-  
-  ;; :hook (lsp-mode . 'lsp-enable-which-key-integration)
-  )
+
+  :hook (lsp-mode . lsp-enable-which-key-integration))
 
 (use-package lsp-ui
-  :after (lsp-mode)
+  :after lsp-mode
   :bind (:map lsp-ui-mode-map
-              ([remap xref-find-definitions] . 'lsp-ui-peek-find-definitions)
-              ([remap xref-find-references] . 'lsp-ui-peek-find-references)))
+              ([remap xref-find-definitions] . lsp-ui-peek-find-definitions)
+              ([remap xref-find-references] . lsp-ui-peek-find-references)))
 
-;; (use-package lsp-solargraph
-;;   :after lsp-mode
-;;   :init
-;;   (setq lsp-solargraph-hover nil))
+(use-package typescript-mode
+  :hook (typescript-mode . lsp))
+
+(use-package js
+  :hook (js-mode . lsp))
 
 (use-package go-mode
   :hook ((go-mode . (lambda ()
                       (add-hook 'before-save-hook 'lsp-format-buffer t t)
                       (add-hook 'before-save-hook 'lsp-organize-imports t t)))
-         (go-mode . 'lsp)))
+         (go-mode . lsp)))
 
 (use-package lua-mode
-  :hook (lua-mode . 'lsp))
+  :hook (lua-mode . lsp))
 
 (use-package ruby-mode
-  :hook (ruby-mode . 'lsp))
+  :hook (ruby-mode . lsp))
 
 (use-package company-lsp
   :after (company lsp-mode)
@@ -162,29 +160,22 @@
 (use-package jq-mode
   :mode "\\.jq$")
 
-(use-package typescript-mode)
-
-(use-package tide
-  :after (typescript-mode)
-  :hook ((typescript-mode . tide-setup)
-         (before-save . tide-format-before-save)))
-
 (use-package magit
   :bind (:map magit-file-mode-map
-              ("C-c g" . 'magit-file-dispatch)))
+              ("C-c g" . magit-file-dispatch)))
 
 (use-package diff-hl
   :config
   (global-diff-hl-mode))
 
 (use-package treemacs
-  :bind (("C-x t t" . 'treemacs)))
+  :bind (("C-x t t" . treemacs)))
 
 (use-package treemacs-projectile
   :after treemacs projectile)
 
 (use-package lsp-java
-  :hook (java-mode . 'lsp))
+  :hook (java-mode . lsp))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -204,7 +195,8 @@
  '(package-selected-packages
    (quote
     (heaven-and-hell material-theme org diff-hl undo-tree treemacs-projectile lsp-ivy lsp-java shell-toggle tide typescript-mode jq-mode lsp-treemacs treemacs lua-mode company-lsp lsp-mode lsp-ui doom-modeline yaml-mode evil-org evil projectile gruvbox-theme magit lispy company flycheck which-key use-package ivy counsel)))
- '(pdf-view-midnight-colors (quote ("#282828" . "#f2e5bc"))))
+ '(pdf-view-midnight-colors (quote ("#282828" . "#f2e5bc")))
+ '(safe-local-variable-values (quote ((read-only-mode . t)))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
