@@ -54,11 +54,16 @@
   (setq org-capture-templates
         `(("t" "Todo" entry
            (file+headline "" "Tasks")
-           "* TODO %?\n %i")
+           "* TODO %?\n")
 
           ("g" "Game add" table-line
            (file "games.org")
-           "|%?||%^{Status:|Play|Replay|Playing|Finished|Ongoing}||")))
+           "|%?||%^{Status:|Play|Replay|Playing|Finished|Ongoing}||")
+
+          ("m" "Movie add" entry
+           (file "movies.org")
+           "* TODO %?"
+           :prepend t)))
 
   :hook (org-mode . org-indent-mode)
   :bind (("C-c a" . org-agenda)
@@ -96,7 +101,9 @@
   :init
   (setq company-idle-delay 0
         company-minimum-prefix-length 1)
-  :hook (prog-mode . company-mode))
+  :hook (prog-mode . company-mode)
+  :bind (:map company-active-map
+              ([escape] . company-abort)))
 
 (use-package flycheck
   :config
@@ -186,15 +193,16 @@
    [default bold shadow italic underline bold bold-italic bold])
  '(ansi-color-names-vector
    ["#ebdbb2" "#9d0006" "#79740e" "#b57614" "#076678" "#8f3f71" "#427b58" "#3c3836"])
- '(custom-enabled-themes (quote (gruvbox-light-soft)))
+ '(custom-enabled-themes (quote (material)))
  '(custom-safe-themes
    (quote
-    ("d4f8fcc20d4b44bf5796196dbeabec42078c2ddb16dcb6ec145a1c610e0842f3" "4cf9ed30ea575fb0ca3cff6ef34b1b87192965245776afa9e9e20c17d115f3fb" "aded61687237d1dff6325edb492bde536f40b048eab7246c61d5c6643c696b7f" "939ea070fb0141cd035608b2baabc4bd50d8ecc86af8528df9d41f4d83664c6a" "a06658a45f043cd95549d6845454ad1c1d6e24a99271676ae56157619952394a" "123a8dabd1a0eff6e0c48a03dc6fb2c5e03ebc7062ba531543dfbce587e86f2a" "e1d09f1b2afc2fed6feb1d672be5ec6ae61f84e058cb757689edb669be926896" default)))
+    ("c7eb06356fd16a1f552cfc40d900fe7326ae17ae7578f0ef5ba1edd4fdd09e58" "c9ddf33b383e74dac7690255dd2c3dfa1961a8e8a1d20e401c6572febef61045" "5b7c31eb904d50c470ce264318f41b3bbc85545e4359e6b7d48ee88a892b1915" "36ca8f60565af20ef4f30783aa16a26d96c02df7b4e54e9900a5138fb33808da" "d4f8fcc20d4b44bf5796196dbeabec42078c2ddb16dcb6ec145a1c610e0842f3" "4cf9ed30ea575fb0ca3cff6ef34b1b87192965245776afa9e9e20c17d115f3fb" "aded61687237d1dff6325edb492bde536f40b048eab7246c61d5c6643c696b7f" "939ea070fb0141cd035608b2baabc4bd50d8ecc86af8528df9d41f4d83664c6a" "a06658a45f043cd95549d6845454ad1c1d6e24a99271676ae56157619952394a" "123a8dabd1a0eff6e0c48a03dc6fb2c5e03ebc7062ba531543dfbce587e86f2a" "e1d09f1b2afc2fed6feb1d672be5ec6ae61f84e058cb757689edb669be926896" default)))
+ '(hl-sexp-background-color "#1c1f26")
  '(org-babel-load-languages (quote ((js . t))))
  '(org-support-shift-select t)
  '(package-selected-packages
    (quote
-    (heaven-and-hell material-theme org diff-hl undo-tree treemacs-projectile lsp-ivy lsp-java shell-toggle tide typescript-mode jq-mode lsp-treemacs treemacs lua-mode company-lsp lsp-mode lsp-ui doom-modeline yaml-mode evil-org evil projectile gruvbox-theme magit lispy company flycheck which-key use-package ivy counsel)))
+    (atom-dark-theme ample-zen-theme ample-theme heaven-and-hell material-theme org diff-hl undo-tree treemacs-projectile lsp-ivy lsp-java shell-toggle tide typescript-mode jq-mode lsp-treemacs treemacs lua-mode company-lsp lsp-mode lsp-ui doom-modeline yaml-mode evil-org evil projectile gruvbox-theme magit lispy company flycheck which-key use-package ivy counsel)))
  '(pdf-view-midnight-colors (quote ("#282828" . "#f2e5bc")))
  '(safe-local-variable-values (quote ((read-only-mode . t)))))
 (custom-set-faces
