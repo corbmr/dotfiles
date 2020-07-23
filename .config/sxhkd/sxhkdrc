@@ -30,6 +30,10 @@ super + shift + w
 XF86AudioPlay
 	playerctl play-pause
 
+# Previous / Next track
+XF86Audio{Prev,Next}
+	playerctl {previous,next}
+
 # Restart WM
 super + shift + r
 	bspc wm -r 
@@ -88,9 +92,9 @@ super + ctrl + {Left,Right}
 
 # Focus desktop
 super + ctrl + {j,k}
-	bspc desktop -f {prev,next}.local
+	bspc desktop -f {next,prev}.local
 super + ctrl + {Down,Up}
-	bspc desktop -f {prev,next}.local
+	bspc desktop -f {next,prev}.local
 
 # Flip tree
 super + {_,shift} + v
@@ -98,17 +102,17 @@ super + {_,shift} + v
 
 # Preselect
 super + s ; {Left,Down,Up,Right}
-	bspc node -p ~{west,south,north,east}
+	bspc node -p '~{west,south,north,east}'
 super + s ; {h,j,k,l}
-	bspc node -p ~{west,south,north,east}
+	bspc node -p '~{west,south,north,east}'
 
 # Cancel preselect
 super + Escape
 	bspc node -p cancel
 
-# Focus parent
+# Focus parent or child
 super + {_,shift} + a
-	bspc node -f {@parent,pointed}
+	bspc node -f {@parent,last.descendant_of}
 
 # Close or kill window
 super + {shift,ctrl} + q
@@ -122,13 +126,17 @@ super + {_,ctrl} + {_,shift} + Tab
 super + {_,ctrl} + button{4,5}
 	bspc {node,desktop} -f {next,prev}.local
 
+# Rename current desktop
+super + shift + d
+	dmenu -p Rename: <&- | xargs -r -I% bspc desktop -n %
+
 # Switch layout
 super + w
 	bspc desktop -l next
 
 # Prompt to search firefox 
 super + o ; s
-	dmenu -c -p Search: <&- | xargs -r -I% firefox --new-tab --search %
+	dmenu -p Search: <&- | xargs -r -I% firefox --new-tab --search %
 
 # Toggle gaps
 super + y
@@ -136,7 +144,7 @@ super + y
 
 # Balance tree
 super + {_,shift} + {_,ctrl} + e
-	bspc node @{parent,/} -{E,B}
+	bspc node @{/,parent} -{E,B}
 
 # Golden ratio focused node
 super + shift + g
@@ -150,9 +158,9 @@ super + {_,shift} + f
 super + {_,shift} + {End,Home}
 	bspc {desktop -f,node -d} {next,prev}.local
 
-# Focus next monitor or send window to next monitor
-super + ctrl + {_,shift} + {End,Home}
-	bspc {monitor -f,node -m} {next,prev}
+# Bubble up/down desktop
+super + ctrl + shift + {End,Home}
+	bspc desktop -b {next,prev}
 
 # Set window as sticky or hidden
 super + {_,shift} + t
@@ -160,7 +168,8 @@ super + {_,shift} + t
 
 # Display menu to unhide window
 super + ctrl + minus
-	bspc query -N -n .hidden.window | xargs -r xtitle -f '%u %s\n' | dmenu -c -l 5 | cut -f1 -d' ' | xargs -Iw bspc node w -g hidden=off
+	w=$(bspc query -N -n .hidden.window | dmenu -l 5 -p Unhide:); \
+	[ -n "$w" ] && bspc node $w -g hidden=off
 
 # Rotate tree
 super + bracket{left,right}

@@ -22,8 +22,9 @@ exec --no-startup-id /usr/local/amazon/sbin/acmed-session.sh
 set $output1 eDP-1
 set $output2 DP-1-2
 set $output3 DP-1-1
-
 set $output4 HDMI-1
+set $output5 DP-1
+set $output6 DP-2
 
 # workspace 1 output $output1
 # workspace 2 output $output3
@@ -31,14 +32,16 @@ set $output4 HDMI-1
 # workspace 4 output $output2
 # workspace 6 output $output2
 
-workspace 2 output $output4
-workspace 3 output $output4
-workspace 4 output $output4
-workspace 5 output $output4
+workspace 2 output $output6
+workspace 3 output $output5
+workspace 4 output $output5
+workspace 5 output $output6
+workspace 6 output $output6
+workspace 7 output $output5
 
 # bindsym --release button2 kill
 
-for_window [class=".*"] border pixel 1
+for_window [class=".*"] border pixel 2
 # bindsym $mod+y title_format "[%class][%instance] %title", border normal
 bindsym $mod+u border toggle 1
 
