@@ -85,16 +85,10 @@ super + r : {Left,Down,Up,Right}
 	~/.config/sxhkd/resize {west,south,north,east}
 
 # Focus monitor
-super + ctrl + {h,l}
-	bspc monitor -f {prev,next}
-super + ctrl + {Left,Right}
-	bspc monitor -f {prev,next}
-
-# Focus desktop
-super + ctrl + {j,k}
-	bspc desktop -f {next,prev}.local
-super + ctrl + {Down,Up}
-	bspc desktop -f {next,prev}.local
+super + ctrl + {h,j,k,l}
+	bspc monitor -f {west,south,north,east}
+super + ctrl + {Left,Down,Up,Right}
+	bspc monitor -f {west,south,north,east}
 
 # Flip tree
 super + {_,shift} + v
@@ -130,13 +124,13 @@ super + {_,ctrl} + button{4,5}
 super + shift + d
 	dmenu -p Rename: <&- | xargs -r -I% bspc desktop -n %
 
-# Switch layout
-super + w
-	bspc desktop -l next
-
 # Prompt to search firefox 
 super + o ; s
 	dmenu -p Search: <&- | xargs -r -I% firefox --new-tab --search %
+
+# Switch layout
+super + w
+	bspc desktop -l next
 
 # Toggle gaps
 super + y
@@ -151,12 +145,12 @@ super + shift + g
 	~/.config/sxhkd/golden
 
 # Toggle floating / fullscreen
-super + {_,shift} + f
-	bspc node -t ~{floating,fullscreen}
+super + {_,shift,alt} + f
+	bspc node -t ~{floating,fullscreen,tiled}
 
 # Focus next desktop or send window to next desktop
-super + {_,shift} + {End,Home}
-	bspc {desktop -f,node -d} {next,prev}.local
+super + {_,ctrl,shift} + {End,Home}
+	bspc {desktop -f,desktop -f,node -d} {next,prev}.local
 
 # Bubble up/down desktop
 super + ctrl + shift + {End,Home}
@@ -169,7 +163,7 @@ super + {_,shift} + t
 # Display menu to unhide window
 super + ctrl + minus
 	w=$(bspc query -N -n .hidden.window | dmenu -l 5 -p Unhide:); \
-	[ -n "$w" ] && bspc node $w -g hidden=off
+	[ -n "$w" ] && bspc node $w -g hidden=off && bspc node -f $w
 
 # Rotate tree
 super + bracket{left,right}

@@ -184,6 +184,9 @@
 (use-package lsp-java
   :hook (java-mode . lsp))
 
+(use-package yafolding
+  :hook (prog-mode . yafolding-mode))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -203,7 +206,7 @@
  '(org-support-shift-select t)
  '(package-selected-packages
    (quote
-    (atom-dark-theme ample-zen-theme ample-theme heaven-and-hell material-theme org diff-hl undo-tree treemacs-projectile lsp-ivy lsp-java shell-toggle tide typescript-mode jq-mode lsp-treemacs treemacs lua-mode company-lsp lsp-mode lsp-ui doom-modeline yaml-mode evil-org evil projectile gruvbox-theme magit lispy company flycheck which-key use-package ivy counsel)))
+    (discover yafolding atom-dark-theme ample-zen-theme ample-theme heaven-and-hell material-theme org diff-hl undo-tree treemacs-projectile lsp-ivy lsp-java shell-toggle tide typescript-mode jq-mode lsp-treemacs treemacs lua-mode company-lsp lsp-mode lsp-ui doom-modeline yaml-mode evil-org evil projectile gruvbox-theme magit lispy company flycheck which-key use-package ivy counsel)))
  '(pdf-view-midnight-colors (quote ("#282828" . "#f2e5bc")))
  '(safe-local-variable-values (quote ((read-only-mode . t))))
  '(vc-annotate-background nil)
