@@ -8,6 +8,20 @@ for mon in $(bspc query -M --names); do
     MONITOR=$mon polybar -r main &
 done
 
+for d in $(bspc query -D --names); do
+    case $d in
+        Personal|Music|Email|Emacs)
+            bspc desktop $d -m DP-2
+            ;;
+        Chime)
+            bspc desktop $d -m eDP-1
+            ;;
+        *)
+            bspc desktop $d -m DP-1
+            ;;
+    esac
+done
+
 bspc config border_width 2
 bspc config window_gap   8
 
@@ -25,7 +39,7 @@ bspc config pointer_action3  resize_corner
 bspc config pointer_follows_focus   false
 bspc config pointer_follows_monitor true
 bspc config focus_follows_pointer   true
-bspc config pointer_motion_interval 100
+bspc config pointer_motion_interval 50
 bspc config single_monocle          false
 
 bspc config automatic_scheme alternate

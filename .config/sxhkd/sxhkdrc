@@ -44,7 +44,8 @@ super + ctrl + Escape
 
 # Add desktop
 super + plus
-	bspc monitor -a $(bspc query -D | wc -l)
+	d=$(bspc query -D | wc -l | dmenu -l 1); \
+	[ -n "$d" ] && bspc monitor -a $d && bspc desktop -f $d
 
 # Remove desktop
 super + underscore
@@ -90,9 +91,13 @@ super + ctrl + {h,j,k,l}
 super + ctrl + {Left,Down,Up,Right}
 	bspc monitor -f {west,south,north,east}
 
-# Flip tree
-super + {_,shift} + v
-	bspc node @parent -F {horizontal,vertical} 
+# Focus last desktop
+super + z
+	bspc desktop -f last.local
+
+# Flip ratio
+super + v
+	bspc node @parent -r $(bspc query -T -n @parent | jq '1.0 - .splitRatio')
 
 # Preselect
 super + s ; {Left,Down,Up,Right}
@@ -122,11 +127,8 @@ super + {_,ctrl} + button{4,5}
 
 # Rename current desktop
 super + shift + d
-	dmenu -p Rename: <&- | xargs -r -I% bspc desktop -n %
-
-# Prompt to search firefox 
-super + o ; s
-	dmenu -p Search: <&- | xargs -r -I% firefox --new-tab --search %
+	d=$(dmenu -p Rename: <&-); \
+    [ -n "$d" ] && bspc desktop -n %
 
 # Switch layout
 super + w
@@ -162,7 +164,7 @@ super + {_,shift} + t
 
 # Display menu to unhide window
 super + ctrl + minus
-	w=$(bspc query -N -n .hidden.window | dmenu -l 5 -p Unhide:); \
+	w=$(bspc query -N -n .hidden.window | dmenu -l 5 -p Unhide: -i); \
 	[ -n "$w" ] && bspc node $w -g hidden=off && bspc node -f $w
 
 # Rotate tree
@@ -172,3 +174,16 @@ super + bracket{left,right}
 # Jump to desktop or send node to desktop
 super + {_,shift} + {1-9}
 	bspc {desktop -f,node -d} ^{1-9}
+
+# Send node to desktop. Creates a new desktop if the given does not exist
+super + m
+	d=$(bspc query -D -d .!focused --names | dmenu -p "Send to:" -l 10 -i); \
+	if [ -n "$d" ]; then \
+	   bspc query -D -d "%$d" >/dev/null || bspc monitor -a $d; \
+	   bspc node -d "%$d" --follow; \
+	fi
+
+# Send desktop to monitor
+super + shift + m
+	m=$(bspc query -M -m .!focused --names | dmenu -p "Send to:" -l 5 -i); \
+	[ -n "$m" ] && bspc desktop -m "%$m" --follow

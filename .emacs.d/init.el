@@ -20,10 +20,20 @@
 (column-number-mode 1)
 (electric-pair-mode 1)
 
-(add-hook 'text-mode-hook 'visual-line-mode)
-(add-hook 'text-mode-hook 'display-line-numbers-mode)
-(add-hook 'prog-mode-hook 'toggle-truncate-lines)
-(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(defun my/prog-mode-hook ()
+  "Hook to be run in 'prog-mode'."
+  (interactive)
+  (toggle-truncate-lines 1)
+  (display-line-numbers-mode 1))
+
+(defun my/text-mode-hook ()
+  "Hook to be run in 'text-mode'."
+  (interactive)
+  (visual-line-mode 1)
+  (display-line-numbers-mode 1))
+
+(add-hook 'text-mode-hook 'my/text-mode-hook)
+(add-hook 'prog-mode-hook 'my/prog-mode-hook)
 
 (defvar --backup-directory (concat user-emacs-directory "backups"))
 (unless (file-exists-p --backup-directory)
@@ -123,15 +133,13 @@
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :config
-  (projectile-mode t)
-  :hook (projectile-after-switch-project . treemacs))
+  (projectile-mode 1))
 
 (use-package lsp-mode
   :commands (lsp lsp-deferred)
   :init
   (setq lsp-enable-snippet nil
         lsp-keymap-prefix "C-c l")
-
   :hook (lsp-mode . lsp-enable-which-key-integration))
 
 (use-package lsp-ui
@@ -141,22 +149,22 @@
               ([remap xref-find-references] . lsp-ui-peek-find-references)))
 
 (use-package typescript-mode
-  :hook (typescript-mode . lsp))
+  :hook (typescript-mode . lsp-deferred))
 
 (use-package js
-  :hook (js-mode . lsp))
+  :hook (js-mode . lsp-deferred))
 
 (use-package go-mode
-  :hook ((go-mode . (lambda ()
+  :hook ((go-mode . lsp-deferred)
+         (go-mode . (lambda ()
                       (add-hook 'before-save-hook 'lsp-format-buffer t t)
-                      (add-hook 'before-save-hook 'lsp-organize-imports t t)))
-         (go-mode . lsp)))
+                      (add-hook 'before-save-hook 'lsp-organize-imports t t)))))
 
 (use-package lua-mode
-  :hook (lua-mode . lsp))
+  :hook (lua-mode . lsp-deferred))
 
 (use-package ruby-mode
-  :hook (ruby-mode . lsp))
+  :hook (ruby-mode . lsp-deferred))
 
 (use-package company-lsp
   :after (company lsp-mode)
@@ -168,8 +176,9 @@
   :mode "\\.jq$")
 
 (use-package magit
-  :bind (:map magit-file-mode-map
-              ("C-c g" . magit-file-dispatch)))
+  :bind (("C-x g" . magit-status)
+         :map magit-file-mode-map
+         ("C-c g" . magit-file-dispatch)))
 
 (use-package diff-hl
   :config
@@ -182,10 +191,14 @@
   :after treemacs projectile)
 
 (use-package lsp-java
-  :hook (java-mode . lsp))
+  :hook (java-mode . lsp-deferred))
 
 (use-package yafolding
   :hook (prog-mode . yafolding-mode))
+
+(use-package discover
+  :config
+  (global-discover-mode))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -206,9 +219,10 @@
  '(org-support-shift-select t)
  '(package-selected-packages
    (quote
-    (discover yafolding atom-dark-theme ample-zen-theme ample-theme heaven-and-hell material-theme org diff-hl undo-tree treemacs-projectile lsp-ivy lsp-java shell-toggle tide typescript-mode jq-mode lsp-treemacs treemacs lua-mode company-lsp lsp-mode lsp-ui doom-modeline yaml-mode evil-org evil projectile gruvbox-theme magit lispy company flycheck which-key use-package ivy counsel)))
+    (emacs-amazon-libs discover yafolding atom-dark-theme ample-zen-theme ample-theme heaven-and-hell material-theme org diff-hl undo-tree treemacs-projectile lsp-ivy lsp-java shell-toggle tide typescript-mode jq-mode lsp-treemacs treemacs lua-mode company-lsp lsp-mode lsp-ui doom-modeline yaml-mode evil-org evil projectile gruvbox-theme magit lispy company flycheck which-key use-package ivy counsel)))
  '(pdf-view-midnight-colors (quote ("#282828" . "#f2e5bc")))
  '(safe-local-variable-values (quote ((read-only-mode . t))))
+ '(smithy-indent-basic 4)
  '(vc-annotate-background nil)
  '(vc-annotate-color-map
    (quote
@@ -237,9 +251,3 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
-(if (daemonp)
-    (add-hook 'after-make-frame-functions
-			  (lambda (frame)
-				(select-frame frame)
-				(load-theme (car custom-enabled-themes) t))))

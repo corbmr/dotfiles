@@ -15,13 +15,15 @@ module-margin = 2
 padding = 1
 
 font-0 = NotoSans-Regular:size=11;2
-font-1 = FontAwesome:size=10
+font-1 = unifont:fontformat=truetype:size=14:antialias=false;0
+font-2 = FontAwesome:style=Regular:pixelsize=12;4
+
 wm-restack = bspwm
 
 [bar/main]
 inherit = bar/base
 width = 100%
-modules-right = clock
+modules-right = ethernet wifi battery clock
 modules-left = bspwm
 scroll-up = bspwm-desknext
 scroll-down = bspwm-deskprev
@@ -34,30 +36,59 @@ interval = 2
 date = %Y-%m-%d
 
 time = %H:%M:%S
-time-alt = %H:%M:%S
 
-label = %date%  %time%
+label =  %date% 𓄐 %time%
 
 [module/bspwm]
 type = internal/bspwm
 enable-scroll = false
 
-format = <label-state>
+format = [<label-mode>] <label-state>
 label-focused = %name%
 label-focused-foreground = #00AAFF
-label-focused-underline = #00AAFF
+label-dimmed-focused-foreground = #0066AA
 
 label-occupied = %name%
 label-occupied-foreground = #FFF
+label-dimmed-occupied-foreground = #AAA
 
 label-empty = %name%
-label-empty-foreground = #666
+label-empty-foreground = #999
+label-dimmed-empty-foreground = #777
 
 label-urgent = %name%
 label-urgent-foreground = #FF2222
+label-dimmed-urgent-foreground = #CC0000
 
 label-separator = "  "
 
-label-monocle = m
-label-tiled = t
-label-fullscreen = f
+label-sticky = S
+label-sticky-foreground = #fba922
+
+[module/battery]
+type = internal/battery
+
+format-charging = <ramp-capacity> <label-charging>
+format-discharging = <ramp-capacity> <label-discharging>
+
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
+
+[module/wifi]
+type = internal/network
+interface = wlp1s0
+
+label-connected =  %essid%
+label-disconnected = 
+label-disconnected-foreground = #444
+
+[module/ethernet]
+type = internal/network
+interface = enp10s0
+
+label-connected =  %linkspeed%
+label-disconnected = 
+label-disconnected-foreground = #444
