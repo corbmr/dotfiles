@@ -46,19 +46,16 @@ enable-scroll = false
 format = [<label-mode>] <label-state>
 label-focused = %name%
 label-focused-foreground = #00AAFF
-label-dimmed-focused-foreground = #0066AA
+label-dimmed-focused-foreground = #0077CC
 
 label-occupied = %name%
 label-occupied-foreground = #FFF
-label-dimmed-occupied-foreground = #AAA
 
 label-empty = %name%
 label-empty-foreground = #999
-label-dimmed-empty-foreground = #777
 
 label-urgent = %name%
 label-urgent-foreground = #FF2222
-label-dimmed-urgent-foreground = #CC0000
 
 label-separator = "  "
 
@@ -83,7 +80,7 @@ interface = wlp1s0
 
 label-connected =  %essid%
 label-disconnected = 
-label-disconnected-foreground = #444
+label-disconnected-foreground = #999
 
 [module/ethernet]
 type = internal/network
@@ -91,4 +88,4 @@ interface = enp10s0
 
 label-connected =  %linkspeed%
 label-disconnected = 
-label-disconnected-foreground = #444
+label-disconnected-foreground = #999

@@ -93,7 +93,7 @@ super + ctrl + {Left,Down,Up,Right}
 
 # Focus last desktop
 super + z
-	bspc desktop -f last.local
+	bspc desktop -f last
 
 # Flip ratio
 super + v
@@ -128,7 +128,7 @@ super + {_,ctrl} + button{4,5}
 # Rename current desktop
 super + shift + d
 	d=$(dmenu -p Rename: <&-); \
-    [ -n "$d" ] && bspc desktop -n %
+    [ -n "$d" ] && bspc desktop -n $d
 
 # Switch layout
 super + w
