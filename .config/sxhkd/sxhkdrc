@@ -128,7 +128,7 @@ super + {_,ctrl} + button{4,5}
 # Rename current desktop
 super + shift + d
 	d=$(dmenu -p Rename: <&-); \
-    [ -n "$d" ] && bspc desktop -n $d
+	[ -n "$d" ] && bspc desktop -n $d
 
 # Switch layout
 super + w
@@ -187,3 +187,8 @@ super + m
 super + shift + m
 	m=$(bspc query -M -m .!focused --names | dmenu -p "Send to:" -l 5 -i); \
 	[ -n "$m" ] && bspc desktop -m "%$m" --follow
+
+# Go to desktop
+super + g
+	d=$(bspc query -D -d .!focused --names | dmenu -p "Go to:" -l 5 -i); \
+	[ -n "$d" ] && bspc desktop -f "%$d"

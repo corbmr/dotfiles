@@ -13,7 +13,7 @@ for d in $(bspc query -D --names); do
         Personal|Music|Email|Emacs)
             bspc desktop $d -m DP-2
             ;;
-        Chime)
+        Message|Run|Personal)
             bspc desktop $d -m eDP-1
             ;;
         *)

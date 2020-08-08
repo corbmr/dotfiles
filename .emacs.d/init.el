@@ -9,7 +9,7 @@
 (setq-default tab-width 4)
 (setq-default standard-indent 4)
 (setq-default indent-tabs-mode nil)
-
+(setq lazy-highlight-initial-delay 0)
 (setq auto-save-default nil)
 
 (menu-bar-mode -1)
@@ -19,21 +19,10 @@
 (show-paren-mode 1)
 (column-number-mode 1)
 (electric-pair-mode 1)
+(global-display-line-numbers-mode 1)
 
-(defun my/prog-mode-hook ()
-  "Hook to be run in 'prog-mode'."
-  (interactive)
-  (toggle-truncate-lines 1)
-  (display-line-numbers-mode 1))
-
-(defun my/text-mode-hook ()
-  "Hook to be run in 'text-mode'."
-  (interactive)
-  (visual-line-mode 1)
-  (display-line-numbers-mode 1))
-
-(add-hook 'text-mode-hook 'my/text-mode-hook)
-(add-hook 'prog-mode-hook 'my/prog-mode-hook)
+(add-hook 'text-mode-hook 'visual-line-mode)
+(add-hook 'prog-mode-hook 'toggle-truncate-lines)
 
 (defvar --backup-directory (concat user-emacs-directory "backups"))
 (unless (file-exists-p --backup-directory)
@@ -51,6 +40,7 @@
 (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
 (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
 (global-set-key [escape] 'keyboard-escape-quit)
+(global-set-key (kbd "C-x K") 'kill-current-buffer)
 
 (eval-when-compile
   (require 'use-package))
@@ -166,6 +156,9 @@
 (use-package ruby-mode
   :hook (ruby-mode . lsp-deferred))
 
+(use-package lsp-java
+  :hook (java-mode . lsp-deferred))
+
 (use-package company-lsp
   :after (company lsp-mode)
   :config
@@ -180,25 +173,49 @@
          :map magit-file-mode-map
          ("C-c g" . magit-file-dispatch)))
 
-(use-package diff-hl
+(use-package git-gutter
   :config
-  (global-diff-hl-mode))
+  (add-to-list 'git-gutter:update-hooks 'focus-in-hook)
+  (global-git-gutter-mode 1))
 
 (use-package treemacs
   :bind (("C-x t t" . treemacs)))
 
 (use-package treemacs-projectile
-  :after treemacs projectile)
+  :after (treemacs projectile))
 
-(use-package lsp-java
-  :hook (java-mode . lsp-deferred))
+(use-package treemacs-evil
+  :after (treemacs evil))
+
+(use-package treemacs-magit
+  :after (treemacs magit))
 
 (use-package yafolding
-  :hook (prog-mode . yafolding-mode))
+  :hook (prog-mode . yafolding-mode)
+  :bind (:map yafolding-mode-map
+              ("C-M-S-<return>" . yafolding-toggle-all)
+              ("C-M-<return>" . yafolding-toggle-element)))
 
 (use-package discover
   :config
   (global-discover-mode))
+
+(use-package evil
+  :init
+  (setq evil-toggle-key "M-z"
+        evil-default-state 'normal)
+  :config
+  (evil-set-initial-state 'emacs-lisp-mode 'emacs)
+  (evil-mode 1))
+
+(use-package evil-magit
+  :after (evil magit)
+  :init
+  (setq evil-magit-state 'motion))
+
+(use-package evil-fringe-mark
+  :config
+  (global-evil-fringe-mark-mode 1))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -219,7 +236,7 @@
  '(org-support-shift-select t)
  '(package-selected-packages
    (quote
-    (emacs-amazon-libs discover yafolding atom-dark-theme ample-zen-theme ample-theme heaven-and-hell material-theme org diff-hl undo-tree treemacs-projectile lsp-ivy lsp-java shell-toggle tide typescript-mode jq-mode lsp-treemacs treemacs lua-mode company-lsp lsp-mode lsp-ui doom-modeline yaml-mode evil-org evil projectile gruvbox-theme magit lispy company flycheck which-key use-package ivy counsel)))
+    (evil-fringe-mark evil-magit treemacs-magit treemacs-evil emacs-amazon-libs discover yafolding atom-dark-theme ample-zen-theme ample-theme heaven-and-hell material-theme org diff-hl undo-tree treemacs-projectile lsp-ivy lsp-java shell-toggle tide typescript-mode jq-mode lsp-treemacs treemacs lua-mode company-lsp lsp-mode lsp-ui doom-modeline yaml-mode evil-org evil projectile gruvbox-theme magit lispy company flycheck which-key use-package ivy counsel)))
  '(pdf-view-midnight-colors (quote ("#282828" . "#f2e5bc")))
  '(safe-local-variable-values (quote ((read-only-mode . t))))
  '(smithy-indent-basic 4)
