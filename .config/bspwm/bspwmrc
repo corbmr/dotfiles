@@ -8,19 +8,10 @@ for mon in $(bspc query -M --names); do
     MONITOR=$mon polybar -r main &
 done
 
-for d in $(bspc query -D --names); do
-    case $d in
-        Personal|Music|Email|Emacs)
-            bspc desktop $d -m DP-2
-            ;;
-        Message|Run|Personal)
-            bspc desktop $d -m eDP-1
-            ;;
-        *)
-            bspc desktop $d -m DP-1
-            ;;
-    esac
-done
+if [ "$1" = 0 ]; then
+    nm-applet &
+    ~/.config/bspwm/organize
+fi
 
 bspc config border_width 2
 bspc config window_gap   8
@@ -45,7 +36,9 @@ bspc config single_monocle          false
 bspc config automatic_scheme alternate
 bspc config remove_unplugged_monitors true
 
+bspc rule -r '*'
 bspc rule -a Emacs state=tiled
 bspc rule -a feh state=floating
+bspc rule -a Spotify desktop=Music
 
 ~/.fehbg

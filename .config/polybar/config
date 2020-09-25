@@ -23,7 +23,7 @@ wm-restack = bspwm
 [bar/main]
 inherit = bar/base
 width = 100%
-modules-right = ethernet wifi battery clock
+modules-right = battery clock
 modules-left = bspwm
 scroll-up = bspwm-desknext
 scroll-down = bspwm-deskprev
@@ -37,7 +37,7 @@ date = %Y-%m-%d
 
 time = %H:%M:%S
 
-label =  %date% 𓄐 %time%
+label =  %date% %time%
 
 [module/bspwm]
 type = internal/bspwm
@@ -65,7 +65,7 @@ label-sticky-foreground = #fba922
 [module/battery]
 type = internal/battery
 
-format-charging = <ramp-capacity> <label-charging>
+format-charging = CHG: <ramp-capacity> <label-charging>
 format-discharging = <ramp-capacity> <label-discharging>
 
 ramp-capacity-0 = 

@@ -14,10 +14,6 @@ super + space
 super + ctrl + space
 	bspc rule -a '*' -o state=floating && rofi -modi drun,window -show drun -show-icons
 
-# Reload keybinds
-super + shift + c
-	; pkill -SIGUSR1 sxhkd
-
 # Screenshot
 Print
 	flameshot gui
@@ -111,7 +107,7 @@ super + Escape
 
 # Focus parent or child
 super + {_,shift} + a
-	bspc node -f {@parent,last.descendant_of}
+	bspc node -f {@parent,last.descendant_of || bspc node -f @first}
 
 # Close or kill window
 super + {shift,ctrl} + q
@@ -163,9 +159,11 @@ super + {_,shift} + t
 	bspc node -g {sticky,hidden}
 
 # Display menu to unhide window
-super + ctrl + minus
-	w=$(bspc query -N -n .hidden.window | dmenu -l 5 -p Unhide: -i); \
-	[ -n "$w" ] && bspc node $w -g hidden=off && bspc node -f $w
+super + minus
+    w=$(for w in $(bspc query -N -n .hidden.window); do \
+            echo $w $(xdotool getwindowname $w); \
+        done | dmenu -l 5 -p Unhide: -i | cut -f1 -d' '); \
+	[ -n "$w" ] && bspc node $w -g hidden=off && bspc node $w -n focused
 
 # Rotate tree
 super + bracket{left,right}
@@ -176,19 +174,23 @@ super + {_,shift} + {1-9}
 	bspc {desktop -f,node -d} ^{1-9}
 
 # Send node to desktop. Creates a new desktop if the given does not exist
-super + m
+super + {_,shift} + m
 	d=$(bspc query -D -d .!focused --names | dmenu -p "Send to:" -l 10 -i); \
 	if [ -n "$d" ]; then \
 	   bspc query -D -d "%$d" >/dev/null || bspc monitor -a $d; \
-	   bspc node -d "%$d" --follow; \
+	   bspc node -d "%$d" { ,--follow}; \
 	fi
 
 # Send desktop to monitor
-super + shift + m
+super + ctrl + {_,shift} + m
 	m=$(bspc query -M -m .!focused --names | dmenu -p "Send to:" -l 5 -i); \
-	[ -n "$m" ] && bspc desktop -m "%$m" --follow
+	[ -n "$m" ] && bspc desktop -m "%$m" { ,--follow}
 
 # Go to desktop
 super + g
 	d=$(bspc query -D -d .!focused --names | dmenu -p "Go to:" -l 5 -i); \
 	[ -n "$d" ] && bspc desktop -f "%$d"
+
+# Organize desktops
+super + shift + o
+	~/.config/bspwm/organize
