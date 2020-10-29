@@ -1,196 +1,209 @@
 # Open terminal
 super + Return
-	exec alacritty
+    exec alacritty
 
 # Open floating terminal
 super + ctrl + Return
-	bspc rule -a Alacritty -o state=floating && exec alacritty
+    bspc rule -a Alacritty -o state=floating && exec alacritty
 
 # Open program launcher
 super + space
-	rofi -modi drun,window -show drun -show-icons
+    rofi -modi drun,window -show drun -show-icons
 
 # Launch floating window
 super + ctrl + space
-	bspc rule -a '*' -o state=floating && rofi -modi drun,window -show drun -show-icons
+    bspc rule -a '*' -o state=floating && rofi -modi drun,window -show drun -show-icons
 
 # Screenshot
 Print
-	flameshot gui
+    flameshot gui
 
 # Update wallpaper
 super + shift + w
-	~/.fehbg
+    ~/.fehbg
 
-# Toggle music player 
+# Toggle player
 XF86AudioPlay
-	playerctl play-pause
+    ~/.config/sxhkd/select_player play-pause
 
 # Previous / Next track
 XF86Audio{Prev,Next}
-	playerctl {previous,next}
+    ~/.config/sxhkd/select_player {previous,next}
+
+# Select player
+super + shift + p
+    p=$(playerctl -l | dmenu -l 5); \
+    [ -n "$p" ] && echo $p > $PLAYER_FILE
 
 # Restart WM
 super + shift + r
-	bspc wm -r 
+    bspc wm -r 
 
 # Quit WM
 super + ctrl + Escape
-	bspc quit
+    bspc quit
 
 # Add desktop
 super + plus
-	d=$(bspc query -D | wc -l | dmenu -l 1); \
-	[ -n "$d" ] && bspc monitor -a $d && bspc desktop -f $d
+    d=$(bspc query -D | wc -l | dmenu -l 1); \
+    [ -n "$d" ] && bspc monitor -a $d && bspc desktop -f $d
 
 # Remove desktop
 super + underscore
-	bspc desktop -r
+    bspc desktop -r
 
 # Focus nodes
 super + {h,j,k,l}
-	d={west,south,north,east}; bspc node -f $d || bspc monitor -f $d
+    d={west,south,north,east}; bspc node -f $d || bspc monitor -f $d
 super + {Left,Down,Up,Right}
-	d={west,south,north,east}; bspc node -f $d || bspc monitor -f $d
+    d={west,south,north,east}; bspc node -f $d || bspc monitor -f $d
 
 # Swap nodes
 super + shift + {h,j,k,l}
-	bspc node -s {west,south,north,east} --follow
+    bspc node -s {west,south,north,east} --follow
 super + shift + {Left,Down,Up,Right}
-	bspc node -s {west,south,north,east} --follow
+    bspc node -s {west,south,north,east} --follow
 
 # Move nodes 
 super + ctrl + shift + {h,j,k,l}
-	d={west,south,north,east}; bspc node -n $d --follow || bspc node -m $d --follow
+    d={west,south,north,east}; bspc node -n $d --follow || bspc node -m $d --follow
 super + ctrl + shift + {Left,Down,Up,Right}
-	d={west,south,north,east}; bspc node -n $d --follow || bspc node -m $d --follow
+    d={west,south,north,east}; bspc node -n $d --follow || bspc node -m $d --follow
 
 # Move desktops
 super + ctrl + alt + {h,j,k,l}
-	d={west,south,north,east}; bspc desktop -m $d --follow || bspc desktop -s $d:focused --follow
+    d={west,south,north,east}; bspc desktop -m $d --follow || bspc desktop -s $d:focused --follow
 super + ctrl + alt + {Left,Down,Up,Right}
-	d={west,south,north,east}; bspc desktop -m $d --follow || bspc desktop -s $d:focused --follow
+    d={west,south,north,east}; bspc desktop -m $d --follow || bspc desktop -s $d:focused --follow
 
 # Resize nodes
 super + alt + {h,j,k,l}
-	~/.config/sxhkd/resize {west,south,north,east}
+    ~/.config/sxhkd/resize {west,south,north,east}
 super + alt + {Left,Down,Up,Right}
-	~/.config/sxhkd/resize {west,south,north,east}
+    ~/.config/sxhkd/resize {west,south,north,east}
 super + r : {h,j,k,l}
-	~/.config/sxhkd/resize {west,south,north,east}
+    ~/.config/sxhkd/resize {west,south,north,east}
 super + r : {Left,Down,Up,Right}
-	~/.config/sxhkd/resize {west,south,north,east}
+    ~/.config/sxhkd/resize {west,south,north,east}
 
 # Focus monitor
 super + ctrl + {h,j,k,l}
-	bspc monitor -f {west,south,north,east}
+    bspc monitor -f {west,south,north,east}
 super + ctrl + {Left,Down,Up,Right}
-	bspc monitor -f {west,south,north,east}
+    bspc monitor -f {west,south,north,east}
 
 # Focus last desktop
 super + z
-	bspc desktop -f last
+    bspc desktop -f last
 
 # Flip ratio
 super + v
-	bspc node @parent -r $(bspc query -T -n @parent | jq '1.0 - .splitRatio')
+    bspc node @parent -r $(bspc query -T -n @parent | jq '1.0 - .splitRatio')
 
 # Preselect
 super + s ; {Left,Down,Up,Right}
-	bspc node -p '~{west,south,north,east}'
+    bspc node -p '~{west,south,north,east}'
 super + s ; {h,j,k,l}
-	bspc node -p '~{west,south,north,east}'
+    bspc node -p '~{west,south,north,east}'
 
 # Cancel preselect
 super + Escape
-	bspc node -p cancel
+    bspc node -p cancel
 
 # Focus parent or child
 super + {_,shift} + a
-	bspc node -f {@parent,last.descendant_of || bspc node -f @first}
+    bspc node -f {@parent,last.descendant_of || bspc node -f @first}
 
 # Close or kill window
 super + {shift,ctrl} + q
-	bspc node -{c,k}
+    bspc node -{c,k}
 
-# Cycle windows / desktops
-super + {_,ctrl} + {_,shift} + Tab
-	bspc {node,desktop} -f {next,prev}.local
+# Cycle windows
+super + {_,shift} + Tab
+    bspc node -f {next,prev}.local.leaf
+
+# Cycle desktops
+super + ctrl + {_,shift} + Tab
+    bspc desktop -f {next,prev}.local
 
 # Cycle windows / desktops with mouse
 super + {_,ctrl} + button{4,5}
-	bspc {node,desktop} -f {next,prev}.local
+    bspc {node,desktop} -f {next,prev}.local
 
 # Rename current desktop
 super + shift + d
-	d=$(dmenu -p Rename: <&-); \
-	[ -n "$d" ] && bspc desktop -n $d
+    d=$(dmenu -p Rename: <&-); \
+    [ -n "$d" ] && bspc desktop -n $d
 
 # Switch layout
 super + w
-	bspc desktop -l next
+    bspc desktop -l next
 
 # Toggle gaps
 super + y
-	bspc config window_gap $([ $(bspc config window_gap) = 0 ] && echo 8 || echo 0)
+    bspc config window_gap $([ $(bspc config window_gap) = 0 ] && echo 8 || echo 0)
 
 # Balance tree
 super + {_,shift} + {_,ctrl} + e
-	bspc node @{/,parent} -{E,B}
+    bspc node @{parent,/} -{E,B}
 
 # Golden ratio focused node
 super + shift + g
-	~/.config/sxhkd/golden
+    ~/.config/sxhkd/golden
 
 # Toggle floating / fullscreen
 super + {_,shift,alt} + f
-	bspc node -t ~{floating,fullscreen,tiled}
+    bspc node -t ~{floating,fullscreen,tiled}
 
 # Focus next desktop or send window to next desktop
 super + {_,ctrl,shift} + {End,Home}
-	bspc {desktop -f,desktop -f,node -d} {next,prev}.local
+    bspc {desktop -f,desktop -f,node -d} {next,prev}.local
+
+# Focus next desktop
+super + {_,ctrl} + {i,o}
+    bspc {desktop -f, desktop -f} {prev,next}.local
 
 # Bubble up/down desktop
 super + ctrl + shift + {End,Home}
-	bspc desktop -b {next,prev}
+    bspc desktop -b {next,prev}
 
 # Set window as sticky or hidden
 super + {_,shift} + t
-	bspc node -g {sticky,hidden}
+    bspc node -g {sticky,hidden}
 
 # Display menu to unhide window
 super + minus
     w=$(for w in $(bspc query -N -n .hidden.window); do \
             echo $w $(xdotool getwindowname $w); \
         done | dmenu -l 5 -p Unhide: -i | cut -f1 -d' '); \
-	[ -n "$w" ] && bspc node $w -g hidden=off && bspc node $w -n focused
+    [ -n "$w" ] && bspc node $w -g hidden=off && bspc node $w -n focused
 
 # Rotate tree
 super + bracket{left,right}
-	bspc node @parent -R {270,90}
+    bspc node @parent -R {270,90}
 
 # Jump to desktop or send node to desktop
 super + {_,shift} + {1-9}
-	bspc {desktop -f,node -d} ^{1-9}
+    bspc {desktop -f,node -d} ^{1-9}
 
 # Send node to desktop. Creates a new desktop if the given does not exist
 super + {_,shift} + m
-	d=$(bspc query -D -d .!focused --names | dmenu -p "Send to:" -l 10 -i); \
-	if [ -n "$d" ]; then \
-	   bspc query -D -d "%$d" >/dev/null || bspc monitor -a $d; \
-	   bspc node -d "%$d" { ,--follow}; \
-	fi
+    d=$(bspc query -D -d .!focused --names | dmenu -p "Send to:" -l 10 -i); \
+    if [ -n "$d" ]; then \
+       bspc query -D -d "%$d" >/dev/null || bspc monitor -a $d; \
+       bspc node -d "%$d" { ,--follow}; \
+    fi
 
 # Send desktop to monitor
 super + ctrl + {_,shift} + m
-	m=$(bspc query -M -m .!focused --names | dmenu -p "Send to:" -l 5 -i); \
-	[ -n "$m" ] && bspc desktop -m "%$m" { ,--follow}
+    m=$(bspc query -M -m .!focused --names | dmenu -p "Send to:" -l 5 -i); \
+    [ -n "$m" ] && bspc desktop -m "%$m" { ,--follow}
 
 # Go to desktop
 super + g
-	d=$(bspc query -D -d .!focused --names | dmenu -p "Go to:" -l 5 -i); \
-	[ -n "$d" ] && bspc desktop -f "%$d"
+    d=$(bspc query -D -d .!focused --names | dmenu -p "Go to:" -l 5 -i); \
+    [ -n "$d" ] && bspc desktop -f "%$d"
 
 # Organize desktops
 super + shift + o
-	~/.config/bspwm/organize
+    ~/.config/bspwm/organize

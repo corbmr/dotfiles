@@ -48,6 +48,9 @@
 (eval-when-compile
   (require 'use-package))
 
+(use-package browse-url
+  :bind ("C-c u" . browse-url))
+
 (use-package org
   :init
   (setq org-directory "~/Org"
@@ -188,7 +191,9 @@
 (use-package magit
   :bind (("C-x g" . magit-status)
          :map magit-file-mode-map
-         ("C-c g" . magit-file-dispatch)))
+         ("C-c g" . magit-file-dispatch))
+  :init
+  (setq magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1))
 
 (use-package git-gutter
   :config
@@ -234,6 +239,12 @@
   :config
   (global-evil-fringe-mark-mode 1))
 
+(use-package newcomment
+  :bind ("C-;" . comment-or-uncomment-region))
+
+(use-package ace-jump-mode
+  :bind ("C-c <SPC>" . ace-jump-mode))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -243,12 +254,12 @@
    [default bold shadow italic underline bold bold-italic bold])
  '(ansi-color-names-vector
    ["#ebdbb2" "#9d0006" "#79740e" "#b57614" "#076678" "#8f3f71" "#427b58" "#3c3836"])
+ '(compilation-scroll-output t)
+ '(custom-enabled-themes '(gruvbox-light-soft))
  '(custom-safe-themes
-   (quote
-    ("37768a79b479684b0756dec7c0fc7652082910c37d8863c35b702db3f16000f8" "a390bea70629258d80f41a42098bafcc636cd5f29f2449f00a86c1dabf68358d" "9b7f37885eec6ef0441bae9c5ea4a1dd2484eef4342aa3f88d1691722f769fba" "13880fa28757754bc40c85b05689c801ddaa877f2fe65abf1779f37776281ef1" "cba5ebfabc6456e4bbd68e0394d176161e1db063c6ca24c23b9828af0bdd7411" "aa6638f0cd2ba2c68be03220ea73495116dc6f0b625405ede34087c1babb71ae" "347f47b3da854bce47e95497bf2df2e313d1cf934adc88af8393a0e3d1b5133e" "0ff8590332dd254c88bfff22a7fbbdd2cc465b4985bc6959d87da1c9163933f0" "d1af5ef9b24d25f50f00d455bd51c1d586ede1949c5d2863bef763c60ddf703a" "afd761c9b0f52ac19764b99d7a4d871fc329f7392dfc6cd29710e8209c691477" "edf1f9e74600cac84368d8c1ae2158db85217c3a02e3b1470545462a64cea016" "c7eb06356fd16a1f552cfc40d900fe7326ae17ae7578f0ef5ba1edd4fdd09e58" "c9ddf33b383e74dac7690255dd2c3dfa1961a8e8a1d20e401c6572febef61045" "5b7c31eb904d50c470ce264318f41b3bbc85545e4359e6b7d48ee88a892b1915" "36ca8f60565af20ef4f30783aa16a26d96c02df7b4e54e9900a5138fb33808da" "d4f8fcc20d4b44bf5796196dbeabec42078c2ddb16dcb6ec145a1c610e0842f3" "4cf9ed30ea575fb0ca3cff6ef34b1b87192965245776afa9e9e20c17d115f3fb" "aded61687237d1dff6325edb492bde536f40b048eab7246c61d5c6643c696b7f" "939ea070fb0141cd035608b2baabc4bd50d8ecc86af8528df9d41f4d83664c6a" "a06658a45f043cd95549d6845454ad1c1d6e24a99271676ae56157619952394a" "123a8dabd1a0eff6e0c48a03dc6fb2c5e03ebc7062ba531543dfbce587e86f2a" "e1d09f1b2afc2fed6feb1d672be5ec6ae61f84e058cb757689edb669be926896" default)))
+   '("37768a79b479684b0756dec7c0fc7652082910c37d8863c35b702db3f16000f8" "a390bea70629258d80f41a42098bafcc636cd5f29f2449f00a86c1dabf68358d" "9b7f37885eec6ef0441bae9c5ea4a1dd2484eef4342aa3f88d1691722f769fba" "13880fa28757754bc40c85b05689c801ddaa877f2fe65abf1779f37776281ef1" "cba5ebfabc6456e4bbd68e0394d176161e1db063c6ca24c23b9828af0bdd7411" "aa6638f0cd2ba2c68be03220ea73495116dc6f0b625405ede34087c1babb71ae" "347f47b3da854bce47e95497bf2df2e313d1cf934adc88af8393a0e3d1b5133e" "0ff8590332dd254c88bfff22a7fbbdd2cc465b4985bc6959d87da1c9163933f0" "d1af5ef9b24d25f50f00d455bd51c1d586ede1949c5d2863bef763c60ddf703a" "afd761c9b0f52ac19764b99d7a4d871fc329f7392dfc6cd29710e8209c691477" "edf1f9e74600cac84368d8c1ae2158db85217c3a02e3b1470545462a64cea016" "c7eb06356fd16a1f552cfc40d900fe7326ae17ae7578f0ef5ba1edd4fdd09e58" "c9ddf33b383e74dac7690255dd2c3dfa1961a8e8a1d20e401c6572febef61045" "5b7c31eb904d50c470ce264318f41b3bbc85545e4359e6b7d48ee88a892b1915" "36ca8f60565af20ef4f30783aa16a26d96c02df7b4e54e9900a5138fb33808da" "d4f8fcc20d4b44bf5796196dbeabec42078c2ddb16dcb6ec145a1c610e0842f3" "4cf9ed30ea575fb0ca3cff6ef34b1b87192965245776afa9e9e20c17d115f3fb" "aded61687237d1dff6325edb492bde536f40b048eab7246c61d5c6643c696b7f" "939ea070fb0141cd035608b2baabc4bd50d8ecc86af8528df9d41f4d83664c6a" "a06658a45f043cd95549d6845454ad1c1d6e24a99271676ae56157619952394a" "123a8dabd1a0eff6e0c48a03dc6fb2c5e03ebc7062ba531543dfbce587e86f2a" "e1d09f1b2afc2fed6feb1d672be5ec6ae61f84e058cb757689edb669be926896" default))
  '(package-selected-packages
-   (quote
-    (fish-mode projectile-ripgrep ripgrep nord-theme white-sand-theme colorless-themes lab-themes greymatters-theme autumn-light-theme parchment-theme mood-one-theme evil-fringe-mark evil-magit treemacs-magit treemacs-evil emacs-amazon-libs discover yafolding atom-dark-theme ample-zen-theme ample-theme heaven-and-hell material-theme org diff-hl undo-tree treemacs-projectile lsp-ivy lsp-java shell-toggle tide typescript-mode jq-mode lsp-treemacs treemacs lua-mode company-lsp lsp-mode lsp-ui doom-modeline yaml-mode evil-org evil projectile gruvbox-theme magit lispy company flycheck which-key use-package ivy counsel)))
+   '(counsel-jq csv-mode sql-indent ace-jump-mode jinja2-mode fish-mode projectile-ripgrep ripgrep nord-theme white-sand-theme colorless-themes lab-themes greymatters-theme autumn-light-theme parchment-theme mood-one-theme evil-fringe-mark evil-magit treemacs-magit treemacs-evil emacs-amazon-libs discover yafolding atom-dark-theme ample-zen-theme ample-theme heaven-and-hell material-theme org diff-hl undo-tree treemacs-projectile lsp-ivy lsp-java shell-toggle tide typescript-mode jq-mode lsp-treemacs treemacs lua-mode company-lsp lsp-mode lsp-ui doom-modeline yaml-mode evil-org evil projectile gruvbox-theme magit lispy company flycheck which-key use-package ivy counsel))
  '(smithy-indent-basic 4))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

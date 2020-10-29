@@ -1,6 +1,8 @@
 #!/bin/sh
 
 pkill sxhkd
+export SXHKD_SHELL=/bin/sh
+export PLAYER_FILE=$HOME/.config/sxhkd/player
 sxhkd &
 
 pkill polybar
@@ -9,8 +11,11 @@ for mon in $(bspc query -M --names); do
 done
 
 if [ "$1" = 0 ]; then
-    nm-applet &
     ~/.config/bspwm/organize
+    
+    nm-applet &
+    /usr/bin/user-hooks &
+    /usr/local/amazon/sbin/acmed-session.sh &
 fi
 
 bspc config border_width 2
