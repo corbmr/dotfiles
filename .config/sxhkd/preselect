@@ -1,0 +1,19 @@
+#!/bin/sh
+set -u
+
+bump_amount=0.1
+
+dir=$1
+
+split=$(bspc query -T -n | jq '.presel | select(. != null)')
+if [ -z "$split"  -o "$(echo $split | jq -r .splitDir)" != $dir ]; then
+    bspc node -o $(bspc config split_ratio)
+    bspc node -p $dir
+else
+    case $dir in
+        north|west) bump_dir='-' ;;
+        south|east) bump_dir='+' ;;
+    esac
+    bspc node -o $(echo $split | jq ".splitRatio $bump_dir $bump_amount") || bspc node -p cancel
+fi
+
