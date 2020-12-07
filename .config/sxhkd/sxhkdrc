@@ -156,8 +156,8 @@ super + shift + g
     ~/.config/sxhkd/golden
 
 # Toggle floating / fullscreen
-super + {_,shift,alt} + f
-    bspc node -t ~{floating,fullscreen,tiled}
+super + {_,shift,ctrl,alt} + f
+    bspc node -t ~{floating,fullscreen,tiled,pseudo_tiled}
 
 # Focus next desktop or send window to next desktop
 super + {_,ctrl,shift} + {End,Home}
