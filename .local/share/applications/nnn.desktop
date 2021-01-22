@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Terminal=true
+Name=nnn
+TryExec=nnn
+Exec=nnn
+Icon=nnn
