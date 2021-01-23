@@ -44,6 +44,6 @@ bspc config remove_unplugged_monitors true
 bspc rule -r '*'
 bspc rule -a Emacs state=tiled
 bspc rule -a Spotify desktop=Music
-bspc rule -a jetbrains-idea-ce state=pseudo_tiled
+bspc rule -a GNvim state=tiled
 
 ~/.fehbg
