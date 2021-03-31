@@ -168,8 +168,10 @@ super + {_,ctrl} + {i,o}
     bspc {desktop -f, desktop -f} {prev,next}.local
 
 # Bubble up/down desktop
-super + ctrl + shift + {End,Home}
-    bspc desktop -b {next,prev}
+super + ctrl + shift + {Home,End}
+    bspc desktop -b {prev,next}
+super + ctrl + shift + {i,o}
+    bspc desktop -b {prev,next}
 
 # Set window as sticky or hidden
 super + {_,shift} + t
