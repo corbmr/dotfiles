@@ -1,6 +1,7 @@
 #!/bin/sh
+set -x
 
-if [ -r $PLAYER_FILE ]; then
+if [ -r "$PLAYER_FILE" ]; then
     playerctl -p $(cat $PLAYER_FILE) $@
 else
     playerctl $@

@@ -32,7 +32,7 @@ XF86Audio{Prev,Next}
 
 # Select player
 super + shift + p
-    p=$(playerctl -l | dmenu -l 5); \
+    p=$(playerctl -l | $MENU -p "Select player"); \
     [ -n "$p" ] && echo $p > $PLAYER_FILE
 
 # Restart WM
@@ -45,7 +45,7 @@ super + ctrl + Escape
 
 # Add desktop
 super + plus
-    d=$(bspc query -D | wc -l | dmenu -l 1); \
+    d=$(bspc query -D | wc -l | $MENU); \
     [ -n "$d" ] && bspc monitor -a $d && bspc desktop -f $d
 
 # Remove desktop
@@ -136,7 +136,7 @@ super + {_,ctrl} + button{4,5}
 
 # Rename current desktop
 super + shift + d
-    d=$(dmenu -p Rename: <&-); \
+    d=$($MENU -p Rename: <&-); \
     [ -n "$d" ] && bspc desktop -n $d
 
 # Switch layout
@@ -181,7 +181,7 @@ super + {_,shift} + t
 super + minus
     w=$(for w in $(bspc query -N -n .hidden.window); do \
             echo $w $(xdotool getwindowname $w); \
-        done | dmenu -l 5 -p Unhide: -i | cut -f1 -d' '); \
+        done | $MENU -p Unhide: -i | cut -f1 -d' '); \
     [ -n "$w" ] && bspc node $w -g hidden=off && bspc node $w -n focused
 
 # Rotate tree
@@ -194,7 +194,7 @@ super + {_,shift} + {1-9}
 
 # Send node to desktop. Creates a new desktop if the given does not exist
 super + {_,shift} + m
-    d=$(bspc query -D -d .!focused --names | dmenu -p "Send to:" -l 10 -i); \
+    d=$(bspc query -D -d .!focused --names | $MENU -p "Send to:" -i); \
     if [ -n "$d" ]; then \
        bspc query -D -d "%$d" >/dev/null || bspc monitor -a $d; \
        bspc node -d "%$d" { ,--follow}; \
@@ -202,12 +202,12 @@ super + {_,shift} + m
 
 # Send desktop to monitor
 super + ctrl + {_,shift} + m
-    m=$(bspc query -M -m .!focused --names | dmenu -p "Send to:" -l 5 -i); \
+    m=$(bspc query -M -m .!focused --names | $MENU -p "Send to:" -i); \
     [ -n "$m" ] && bspc desktop -m "%$m" { ,--follow}
 
 # Go to desktop
 super + g
-    d=$(bspc query -D -d .!focused --names | dmenu -p "Go to:" -l 5 -i); \
+    d=$(bspc query -D -d .!focused --names | $MENU -p "Go to:" -i); \
     [ -n "$d" ] && bspc desktop -f "%$d"
 
 # Organize desktops

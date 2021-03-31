@@ -8,6 +8,7 @@ Plug 'junegunn/fzf.vim'
 " Plug 'neovim/nvim-lspconfig'
 Plug 'wfxr/minimap.vim'
 Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
 
 Plug 'sainnhe/sonokai'
 Plug 'morhetz/gruvbox'
@@ -36,6 +37,7 @@ endif
 
 set hidden
 set number
+set autochdir
 
 set tabstop=4
 set shiftwidth=4
